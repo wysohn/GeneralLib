@@ -1,0 +1,76 @@
+apply plugin: 'java-library'
+apply plugin: 'java'
+
+buildscript {
+  	ext.bukkit_version = "1.12-R0.1-SNAPSHOT"
+}
+
+repositories {
+    jcenter()
+    mavenCentral()
+    
+	maven {
+		url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
+	}
+	maven {
+		url "http://nexus.hc.to/content/repositories/pub_releases/"
+	}
+	maven {
+		url "https://oss.sonatype.org/content/repositories/snapshots"
+	}
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+sourceSets {
+	main {
+		java {
+			srcDirs = ['src/main/java']
+		}
+		resources {
+			srcDirs = ['src/main/resources']
+			include '**/*.yml'
+			include '**/*.mcmeta'
+			include '**/*.json'
+			include '**/*.png'
+		}
+	}
+	
+	test{
+	 	java {
+            srcDirs = ['src/test/java/']
+        }
+	}
+}
+
+configurations {
+	all*.exclude group: 'com.google.gson'
+}
+
+dependencies {
+	compile fileTree(dir: "libs", includes: ['*.jar'])
+	
+	//compile "org.spigotmc:spigot-api:$bukkit_version"
+		
+    testCompile 'junit:junit:4.+'
+    testCompile 'org.mockito:mockito-core:2.+'
+	// https://mvnrepository.com/artifact/org.powermock/powermock-module-junit4
+	testCompile group: 'org.powermock', name: 'powermock-module-junit4', version: '1.7.1'
+	// https://mvnrepository.com/artifact/org.powermock/powermock-core
+	testCompile group: 'org.powermock', name: 'powermock-core', version: '1.7.1'
+	// https://mvnrepository.com/artifact/org.powermock/powermock-module-junit4-common
+	compile group: 'org.powermock', name: 'powermock-module-junit4-common', version: '1.7.1'
+	// https://mvnrepository.com/artifact/org.powermock/powermock-api-easymock
+	testCompile group: 'org.powermock', name: 'powermock-api-easymock', version: '1.7.1'
+	// https://mvnrepository.com/artifact/org.easymock/easymock
+	testCompile group: 'org.easymock', name: 'easymock', version: '3.4'
+	// https://mvnrepository.com/artifact/org.powermock/powermock-api-mockito2
+	testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '1.7.1'
+	
+}
+
+jar {
+	from sourceSets.main.allJava
+}

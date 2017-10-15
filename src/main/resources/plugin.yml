@@ -1,0 +1,7 @@
+name: GeneralLib
+main: org.generallib.main.FakePlugin
+version: 0.1.4
+author: wysohn
+load: STARTUP
+commands:
+    glib:
