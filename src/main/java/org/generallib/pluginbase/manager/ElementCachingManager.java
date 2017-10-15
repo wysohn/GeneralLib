@@ -174,11 +174,13 @@ public abstract class ElementCachingManager<K, V extends ElementCachingManager.N
     }
 
     protected void updateCache(K key){
-        synchronized(db){
-            V newVal = db.load(key.toString(), null);
+        V newVal;
 
-            cache(key, newVal);
+        synchronized(db){
+            newVal = db.load(key.toString(), null);
         }
+
+        cache(key, newVal);
     }
 
     private void cache(K key, V newVal) {
