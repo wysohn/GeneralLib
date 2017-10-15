@@ -26,11 +26,10 @@ import org.generallib.pluginbase.PluginLanguage.Language;
 
 public abstract class SubCommandAdmin extends SubCommand {
 
-	public SubCommandAdmin(PluginBase base, String permission, Language description, Language[] usage, int arguments,
-			String name, String... aliases) {
-		super(base, permission, description, usage, arguments, name, aliases);
-		commandColor = ChatColor.LIGHT_PURPLE;
-	}
-
+    public SubCommandAdmin(PluginBase base, String permission, Language description, Language[] usage, int arguments,
+            String name, String... aliases) {
+        super(base, permission, description, usage, arguments, name, aliases);
+        commandColor = ChatColor.LIGHT_PURPLE;
+    }
 
 }

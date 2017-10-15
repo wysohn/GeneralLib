@@ -25,8 +25,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class JarUtil {
-    public static void copyFolderFromJar(Class<?> classInJar, String folderName, File destFolder, CopyOption option) throws IOException{
-        if(!destFolder.exists())
+    public static void copyFolderFromJar(Class<?> classInJar, String folderName, File destFolder, CopyOption option)
+            throws IOException {
+        if (!destFolder.exists())
             destFolder.mkdirs();
 
         byte[] buffer = new byte[1024];
@@ -39,14 +40,14 @@ public class JarUtil {
 
         ZipEntry entry;
         while ((entry = zis.getNextEntry()) != null) {
-            if(!entry.getName().startsWith(folderName+"/"))
+            if (!entry.getName().startsWith(folderName + "/"))
                 continue;
 
             String fileName = entry.getName();
 
             if (fileName.charAt(fileName.length() - 1) == '/') {
                 File file = new File(destFolder + File.separator + fileName);
-                if(file.isFile()){
+                if (file.isFile()) {
                     file.delete();
                 }
                 file.mkdirs();
@@ -54,18 +55,18 @@ public class JarUtil {
             }
 
             File file = new File(destFolder + File.separator + fileName);
-            if(option == CopyOption.COPY_IF_NOT_EXIST && file.exists())
+            if (option == CopyOption.COPY_IF_NOT_EXIST && file.exists())
                 continue;
 
-            if(!file.getParentFile().exists())
+            if (!file.getParentFile().exists())
                 file.getParentFile().mkdirs();
 
-            if(!file.exists())
+            if (!file.exists())
                 file.createNewFile();
             FileOutputStream fos = new FileOutputStream(file);
 
             int len;
-            while((len = zis.read(buffer)) > 0){
+            while ((len = zis.read(buffer)) > 0) {
                 fos.write(buffer, 0, len);
             }
             fos.close();
@@ -75,7 +76,7 @@ public class JarUtil {
         zis.close();
     }
 
-    public enum CopyOption{
+    public enum CopyOption {
         COPY_IF_NOT_EXIST, REPLACE_IF_EXIST;
     }
 }

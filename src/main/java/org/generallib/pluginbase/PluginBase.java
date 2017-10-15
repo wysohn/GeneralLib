@@ -40,58 +40,64 @@ import org.generallib.pluginbase.language.DefaultLanguages;
 
 /**
  * Always register commands, managers, APIs, and languages.
+ * 
  * @author wysohn
  *
  */
-public abstract class PluginBase extends JavaPlugin{
-	private static final ExecutorService pool = Executors.newScheduledThreadPool(4, new ThreadFactory(){
-		@Override
-		public Thread newThread(Runnable r) {
-			Thread thread = new Thread(r);
-			thread.setPriority(Thread.MIN_PRIORITY);
-			return thread;
-		}
-	});
-	public static void runAsynchronously(Runnable run){
-		PluginBase.pool.execute(run);
-	}
-	private final Queue<Runnable> queuedTasks = new LinkedList<Runnable>();
-	/**
-	 * schedule tasks to be run per each server tick.
-	 * @param run
-	 * @return false if queue size reached 1,000,000.
-	 */
-	public boolean runPerTick(Runnable run){
-		if(queuedTasks.size() > 1000000)
-			return false;
+public abstract class PluginBase extends JavaPlugin {
+    private static final ExecutorService pool = Executors.newScheduledThreadPool(4, new ThreadFactory() {
+        @Override
+        public Thread newThread(Runnable r) {
+            Thread thread = new Thread(r);
+            thread.setPriority(Thread.MIN_PRIORITY);
+            return thread;
+        }
+    });
 
-		queuedTasks.add(run);
-		return true;
-	}
+    public static void runAsynchronously(Runnable run) {
+        PluginBase.pool.execute(run);
+    }
 
-	final Map<Class<? extends PluginManager>, PluginManager> pluginManagers = new HashMap<Class<? extends PluginManager>, PluginManager>();
+    private final Queue<Runnable> queuedTasks = new LinkedList<Runnable>();
 
-	private PluginConfig config;
-	public PluginLanguage lang;
-	//backward compatible
-	public PluginCommandExecutor executor;
-	public Map<String, PluginCommandExecutor> executors;
-	public PluginAPISupport APISupport;
+    /**
+     * schedule tasks to be run per each server tick.
+     * 
+     * @param run
+     * @return false if queue size reached 1,000,000.
+     */
+    public boolean runPerTick(Runnable run) {
+        if (queuedTasks.size() > 1000000)
+            return false;
+
+        queuedTasks.add(run);
+        return true;
+    }
+
+    final Map<Class<? extends PluginManager>, PluginManager> pluginManagers = new HashMap<Class<? extends PluginManager>, PluginManager>();
+
+    private PluginConfig config;
+    public PluginLanguage lang;
+    // backward compatible
+    public PluginCommandExecutor executor;
+    public Map<String, PluginCommandExecutor> executors;
+    public PluginAPISupport APISupport;
 
     private String[] mainCommand;
     private String adminPermission;
 
-	/**
-	 * Do not call this contstructor.
-	 */
-	protected PluginBase(){
-		throw new RuntimeException("Please override default constructor in order to establish PluginBase. This overriden constructor"
-				+ " should also call super constructor(PluginConfig, String, String).");
-	}
+    /**
+     * Do not call this contstructor.
+     */
+    protected PluginBase() {
+        throw new RuntimeException(
+                "Please override default constructor in order to establish PluginBase. This overriden constructor"
+                        + " should also call super constructor(PluginConfig, String, String).");
+    }
 
-	public PluginBase(final PluginConfig config, String mainCommand, String adminPermission) {
-		this(config, new String[]{mainCommand}, adminPermission);
-	}
+    public PluginBase(final PluginConfig config, String mainCommand, String adminPermission) {
+        this(config, new String[] { mainCommand }, adminPermission);
+    }
 
     public PluginBase(final PluginConfig config, String[] mainCommand, String adminPermission) {
         this.config = config;
@@ -99,213 +105,219 @@ public abstract class PluginBase extends JavaPlugin{
         this.adminPermission = adminPermission;
     }
 
-	private void initiatePluginProcedures(){
-		try {
-			if(this.isEnabled())
-				lang.onEnable(this);
-		} catch (Exception e) {
-			e.printStackTrace();
-			this.getLogger().severe("While loading lang:");
-			this.getLogger().severe(e.getClass().getSimpleName()+"@"+e.getMessage());
-			this.setEnabled(false);
-		}
+    private void initiatePluginProcedures() {
+        try {
+            if (this.isEnabled())
+                lang.onEnable(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+            this.getLogger().severe("While loading lang:");
+            this.getLogger().severe(e.getClass().getSimpleName() + "@" + e.getMessage());
+            this.setEnabled(false);
+        }
 
-		try {
-			if(this.isEnabled()){
-			    for(PluginCommandExecutor executor : executors.values())
-			        executor.onEnable(this);
-			}
+        try {
+            if (this.isEnabled()) {
+                for (PluginCommandExecutor executor : executors.values())
+                    executor.onEnable(this);
+            }
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			this.getLogger().severe("While loading command executor:");
-			this.getLogger().severe(e.getClass().getSimpleName()+"@"+e.getMessage());
-			this.setEnabled(false);
-		}
+        } catch (Exception e) {
+            e.printStackTrace();
+            this.getLogger().severe("While loading command executor:");
+            this.getLogger().severe(e.getClass().getSimpleName() + "@" + e.getMessage());
+            this.setEnabled(false);
+        }
 
-		try {
-			if(this.isEnabled())
-				APISupport.onEnable(this);
-		} catch (Exception e) {
-			e.printStackTrace();
-			this.getLogger().severe("While loading APISupport:");
-			this.getLogger().severe(e.getClass().getSimpleName()+"@"+e.getMessage());
-			this.setEnabled(false);
-		}
+        try {
+            if (this.isEnabled())
+                APISupport.onEnable(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+            this.getLogger().severe("While loading APISupport:");
+            this.getLogger().severe(e.getClass().getSimpleName() + "@" + e.getMessage());
+            this.setEnabled(false);
+        }
 
-		Map<Integer, Set<PluginManager>> map = new TreeMap<Integer, Set<PluginManager>>(){{
-			for(int i = PluginManager.FASTEST_PRIORITY; i <= PluginManager.SLOWEST_PRIORITY; i++){
-				put(i, new HashSet<PluginManager>());
-			}
-		}};
+        Map<Integer, Set<PluginManager>> map = new TreeMap<Integer, Set<PluginManager>>() {
+            {
+                for (int i = PluginManager.FASTEST_PRIORITY; i <= PluginManager.SLOWEST_PRIORITY; i++) {
+                    put(i, new HashSet<PluginManager>());
+                }
+            }
+        };
 
-		for(Entry<Class<? extends PluginManager>, PluginManager> entry : pluginManagers.entrySet()){
-			Set<PluginManager> set = map.get(entry.getValue().getLoadPriority());
-			set.add(entry.getValue());
-		}
+        for (Entry<Class<? extends PluginManager>, PluginManager> entry : pluginManagers.entrySet()) {
+            Set<PluginManager> set = map.get(entry.getValue().getLoadPriority());
+            set.add(entry.getValue());
+        }
 
-		for(Entry<Integer, Set<PluginManager>> entry : map.entrySet()){
-			Set<PluginManager> managers = entry.getValue();
+        for (Entry<Integer, Set<PluginManager>> entry : map.entrySet()) {
+            Set<PluginManager> managers = entry.getValue();
 
-			for(PluginManager manager : managers){
-				try {
-					manager.onEnable();
-				} catch (Exception e) {
-					e.printStackTrace();
-					this.getLogger().severe("While Enabling ["+manager.getClass().getSimpleName()+"]:");
-					this.getLogger().severe(e.getClass().getSimpleName()+"@"+e.getMessage());
-					this.setEnabled(false);
+            for (PluginManager manager : managers) {
+                try {
+                    manager.onEnable();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    this.getLogger().severe("While Enabling [" + manager.getClass().getSimpleName() + "]:");
+                    this.getLogger().severe(e.getClass().getSimpleName() + "@" + e.getMessage());
+                    this.setEnabled(false);
 
-					this.getLogger().info(lang.parseFirstString(DefaultLanguages.Plugin_WillBeDisabled));
-					return;
-				}
+                    this.getLogger().info(lang.parseFirstString(DefaultLanguages.Plugin_WillBeDisabled));
+                    return;
+                }
 
-				if(manager instanceof Listener){
-				    getServer().getPluginManager().registerEvents((Listener) manager, this);
-				}
-			}
-		}
-	}
+                if (manager instanceof Listener) {
+                    getServer().getPluginManager().registerEvents((Listener) manager, this);
+                }
+            }
+        }
+    }
 
-	private void finalizeDisableProcedures(){
-		try {
-			if(config != null)
-				config.onDisable(this);
-		} catch (Exception e) {
-			e.printStackTrace();
-			this.getLogger().severe("While disabling config:");
-			this.getLogger().severe(e.getClass().getSimpleName()+"@"+e.getMessage());
-		}
+    private void finalizeDisableProcedures() {
+        try {
+            if (config != null)
+                config.onDisable(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+            this.getLogger().severe("While disabling config:");
+            this.getLogger().severe(e.getClass().getSimpleName() + "@" + e.getMessage());
+        }
 
-		try {
-			if(lang != null)
-				lang.onDisable(this);
-		} catch (Exception e) {
-			e.printStackTrace();
-			this.getLogger().severe("While disabling lang:");
-			this.getLogger().severe(e.getClass().getSimpleName()+"@"+e.getMessage());
-		}
+        try {
+            if (lang != null)
+                lang.onDisable(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+            this.getLogger().severe("While disabling lang:");
+            this.getLogger().severe(e.getClass().getSimpleName() + "@" + e.getMessage());
+        }
 
         try {
             for (PluginCommandExecutor executor : executors.values())
                 executor.onDisable(this);
         } catch (Exception e) {
-			e.printStackTrace();
-			this.getLogger().severe("While disabling command executor:");
-			this.getLogger().severe(e.getClass().getSimpleName()+"@"+e.getMessage());
-		}
+            e.printStackTrace();
+            this.getLogger().severe("While disabling command executor:");
+            this.getLogger().severe(e.getClass().getSimpleName() + "@" + e.getMessage());
+        }
 
-		try {
-			if(APISupport != null)
-				APISupport.onDisable(this);
-		} catch (Exception e) {
-			e.printStackTrace();
-			this.getLogger().severe("While disabling APISupport:");
-			this.getLogger().severe(e.getClass().getSimpleName()+"@"+e.getMessage());
-		}
+        try {
+            if (APISupport != null)
+                APISupport.onDisable(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+            this.getLogger().severe("While disabling APISupport:");
+            this.getLogger().severe(e.getClass().getSimpleName() + "@" + e.getMessage());
+        }
 
-		Map<Integer, Set<PluginManager>> map = new TreeMap<Integer, Set<PluginManager>>(){{
-			for(int i = PluginManager.FASTEST_PRIORITY; i <= PluginManager.SLOWEST_PRIORITY; i++){
-				put(i, new HashSet<PluginManager>());
-			}
-		}};
+        Map<Integer, Set<PluginManager>> map = new TreeMap<Integer, Set<PluginManager>>() {
+            {
+                for (int i = PluginManager.FASTEST_PRIORITY; i <= PluginManager.SLOWEST_PRIORITY; i++) {
+                    put(i, new HashSet<PluginManager>());
+                }
+            }
+        };
 
-		for(Entry<Class<? extends PluginManager>, PluginManager> entry : pluginManagers.entrySet()){
-			Set<PluginManager> set = map.get(entry.getValue().getLoadPriority());
-			set.add(entry.getValue());
-		}
+        for (Entry<Class<? extends PluginManager>, PluginManager> entry : pluginManagers.entrySet()) {
+            Set<PluginManager> set = map.get(entry.getValue().getLoadPriority());
+            set.add(entry.getValue());
+        }
 
-		for(Entry<Integer, Set<PluginManager>> entry : map.entrySet()){
-			Set<PluginManager> managers = entry.getValue();
+        for (Entry<Integer, Set<PluginManager>> entry : map.entrySet()) {
+            Set<PluginManager> managers = entry.getValue();
 
-			for(PluginManager manager : managers){
-				try {
-					manager.onDisable();
-				} catch (Exception e) {
-					e.printStackTrace();
-					this.getLogger().severe("While Enabling ["+manager.getClass().getSimpleName()+"]:");
-					this.getLogger().severe(e.getClass().getSimpleName()+"@"+e.getMessage());
-					this.setEnabled(false);
+            for (PluginManager manager : managers) {
+                try {
+                    manager.onDisable();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    this.getLogger().severe("While Enabling [" + manager.getClass().getSimpleName() + "]:");
+                    this.getLogger().severe(e.getClass().getSimpleName() + "@" + e.getMessage());
+                    this.setEnabled(false);
 
-					this.getLogger().info(lang.parseFirstString(DefaultLanguages.Plugin_WillBeDisabled));
-					return;
-				}
+                    this.getLogger().info(lang.parseFirstString(DefaultLanguages.Plugin_WillBeDisabled));
+                    return;
+                }
 
-				if(manager instanceof Listener){
-					if(this.isEnabled())
-						getServer().getPluginManager().registerEvents((Listener) manager, this);
-				}
-			}
-		}
-	}
+                if (manager instanceof Listener) {
+                    if (this.isEnabled())
+                        getServer().getPluginManager().registerEvents((Listener) manager, this);
+                }
+            }
+        }
+    }
 
-	public void reloadPluginProcedures(){
-		try {
-			config.onReload(this);
-		} catch (Exception e) {
-			e.printStackTrace();
-			this.getLogger().severe("While reloading config:");
-			this.getLogger().severe(e.getClass().getSimpleName()+"@"+e.getMessage());
-		}
+    public void reloadPluginProcedures() {
+        try {
+            config.onReload(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+            this.getLogger().severe("While reloading config:");
+            this.getLogger().severe(e.getClass().getSimpleName() + "@" + e.getMessage());
+        }
 
-		try {
-			lang.onReload(this);
-		} catch (Exception e) {
-			e.printStackTrace();
-			this.getLogger().severe("While reloading lang:");
-			this.getLogger().severe(e.getClass().getSimpleName()+"@"+e.getMessage());
-		}
+        try {
+            lang.onReload(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+            this.getLogger().severe("While reloading lang:");
+            this.getLogger().severe(e.getClass().getSimpleName() + "@" + e.getMessage());
+        }
 
-		try {
-            for(PluginCommandExecutor executor : executors.values())
+        try {
+            for (PluginCommandExecutor executor : executors.values())
                 executor.onReload(this);
-		} catch (Exception e) {
-			e.printStackTrace();
-			this.getLogger().severe("While reloading command executor:");
-			this.getLogger().severe(e.getClass().getSimpleName()+"@"+e.getMessage());
-		}
+        } catch (Exception e) {
+            e.printStackTrace();
+            this.getLogger().severe("While reloading command executor:");
+            this.getLogger().severe(e.getClass().getSimpleName() + "@" + e.getMessage());
+        }
 
-		try {
-			APISupport.onReload(this);
-		} catch (Exception e) {
-			e.printStackTrace();
-			this.getLogger().severe("While reloading APISupport:");
-			this.getLogger().severe(e.getClass().getSimpleName()+"@"+e.getMessage());
-		}
+        try {
+            APISupport.onReload(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+            this.getLogger().severe("While reloading APISupport:");
+            this.getLogger().severe(e.getClass().getSimpleName() + "@" + e.getMessage());
+        }
 
-		Map<Integer, Set<PluginManager>> map = new TreeMap<Integer, Set<PluginManager>>(){{
-			for(int i = PluginManager.FASTEST_PRIORITY; i <= PluginManager.SLOWEST_PRIORITY; i++){
-				put(i, new HashSet<PluginManager>());
-			}
-		}};
+        Map<Integer, Set<PluginManager>> map = new TreeMap<Integer, Set<PluginManager>>() {
+            {
+                for (int i = PluginManager.FASTEST_PRIORITY; i <= PluginManager.SLOWEST_PRIORITY; i++) {
+                    put(i, new HashSet<PluginManager>());
+                }
+            }
+        };
 
-		for(Entry<Class<? extends PluginManager>, PluginManager> entry : pluginManagers.entrySet()){
-			Set<PluginManager> set = map.get(entry.getValue().getLoadPriority());
-			set.add(entry.getValue());
-		}
+        for (Entry<Class<? extends PluginManager>, PluginManager> entry : pluginManagers.entrySet()) {
+            Set<PluginManager> set = map.get(entry.getValue().getLoadPriority());
+            set.add(entry.getValue());
+        }
 
-		for(Entry<Integer, Set<PluginManager>> entry : map.entrySet()){
-			Set<PluginManager> managers = entry.getValue();
+        for (Entry<Integer, Set<PluginManager>> entry : map.entrySet()) {
+            Set<PluginManager> managers = entry.getValue();
 
-			for(PluginManager manager : managers){
-				try {
-					if(this.isEnabled())
-						manager.onReload();
-				} catch (Exception e) {
-					e.printStackTrace();
-					this.getLogger().severe("While Enabling ["+manager.getClass().getSimpleName()+"]:");
-					this.getLogger().severe(e.getClass().getSimpleName()+"@"+e.getMessage());
-					this.setEnabled(false);
+            for (PluginManager manager : managers) {
+                try {
+                    if (this.isEnabled())
+                        manager.onReload();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    this.getLogger().severe("While Enabling [" + manager.getClass().getSimpleName() + "]:");
+                    this.getLogger().severe(e.getClass().getSimpleName() + "@" + e.getMessage());
+                    this.setEnabled(false);
 
-					this.getLogger().info(lang.parseFirstString(DefaultLanguages.Plugin_WillBeDisabled));
-					return;
-				}
-			}
-		}
-	}
+                    this.getLogger().info(lang.parseFirstString(DefaultLanguages.Plugin_WillBeDisabled));
+                    return;
+                }
+            }
+        }
+    }
 
-	@Override
-	public void onEnable() {
+    @Override
+    public void onEnable() {
         try {
             config.onEnable(this);
         } catch (Exception e) {
@@ -324,65 +336,65 @@ public abstract class PluginBase extends JavaPlugin{
 
         this.lang = new PluginLanguage(list, def);
         this.executors = new HashMap<>();
-        for(int i = 0; i < mainCommand.length; i++)
+        for (int i = 0; i < mainCommand.length; i++)
             this.executors.put(mainCommand[i], new PluginCommandExecutor(mainCommand[i], adminPermission));
         this.executor = this.executors.get(mainCommand[0]);
         this.APISupport = new PluginAPISupport();
 
         preEnable();
 
-		initiatePluginProcedures();
+        initiatePluginProcedures();
 
-		if(this.isEnabled()){
-			Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable(){
-				@Override
-				public void run() {
-					Set<Runnable> send = new HashSet<Runnable>();
-					for(int i = 0; i < 1000 && !queuedTasks.isEmpty(); i++){
-						Runnable run = queuedTasks.poll();
-						if(run == null)
-							continue;
-						send.add(run);
-					}
+        if (this.isEnabled()) {
+            Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+                @Override
+                public void run() {
+                    Set<Runnable> send = new HashSet<Runnable>();
+                    for (int i = 0; i < 1000 && !queuedTasks.isEmpty(); i++) {
+                        Runnable run = queuedTasks.poll();
+                        if (run == null)
+                            continue;
+                        send.add(run);
+                    }
 
-					for(Runnable run : send)
-						run.run();
-				}
-			}, 10L, 1L);
-		}
-	}
+                    for (Runnable run : send)
+                        run.run();
+                }
+            }, 10L, 1L);
+        }
+    }
 
-	/**
-	 * This is good place to initialize all commands, managers, etc.
-	 */
-	protected abstract void preEnable();
+    /**
+     * This is good place to initialize all commands, managers, etc.
+     */
+    protected abstract void preEnable();
 
     @Override
-	public void onDisable() {
-		finalizeDisableProcedures();
-	}
+    public void onDisable() {
+        finalizeDisableProcedures();
+    }
 
-	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-	    PluginCommandExecutor executor = executors.get(command.getName());
-	    if(executor == null)
-	        return true;
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        PluginCommandExecutor executor = executors.get(command.getName());
+        if (executor == null)
+            return true;
 
-		return executor.onCommand(sender, command, label, args);
-	}
+        return executor.onCommand(sender, command, label, args);
+    }
 
-	public void sendMessage(CommandSender sender, Language language){
-	    if(sender == null)
-	        return;
+    public void sendMessage(CommandSender sender, Language language) {
+        if (sender == null)
+            return;
 
-		if(sender instanceof Player){
-			sendMessage((Player)sender, language);
-		}else{
-		    for(String msg : lang.parseStrings(language)){
-		        sendMessage(sender, msg, 1000);
-		    }
-		}
-	}
+        if (sender instanceof Player) {
+            sendMessage((Player) sender, language);
+        } else {
+            for (String msg : lang.parseStrings(language)) {
+                sendMessage(sender, msg, 1000);
+            }
+        }
+    }
 
     public void sendMessage(Player player, Language language) {
         if (player == null)
@@ -391,72 +403,73 @@ public abstract class PluginBase extends JavaPlugin{
         String localeSimplified = "en";
         try {
             localeSimplified = FakePlugin.nmsEntityManager.getLocale(player);
-        } catch(Exception e){
-            //silently fail
+        } catch (Exception e) {
+            // silently fail
         } finally {
             for (String msg : lang.parseStrings(player, language, localeSimplified))
                 sendMessage(player, lang.colorize(getPluginConfig().Plugin_Prefix) + " " + msg, 1000);
         }
     }
 
-    private static void sendMessage(CommandSender sender, String msg, int limit){
-        if(msg.length() <= limit){
+    private static void sendMessage(CommandSender sender, String msg, int limit) {
+        if (msg.length() <= limit) {
             sender.sendMessage(msg);
-        }else{
-            int count = (int) Math.ceil((double)msg.length() / limit);
-            for(int i = 0; i < count; i++){
+        } else {
+            int count = (int) Math.ceil((double) msg.length() / limit);
+            for (int i = 0; i < count; i++) {
                 int index = i * limit;
-                if(i < count - 1){
+                if (i < count - 1) {
                     sender.sendMessage(msg.substring(index, index + limit));
-                }else{
+                } else {
                     sender.sendMessage(msg.substring(index, index + msg.length() % limit));
                 }
             }
         }
     }
 
-	/**
-	 *
-	 * @param clazz
-	 * @return the Manager; null if nothing found.
-	 */
-/*	@SuppressWarnings("unchecked")
-	public <T extends PluginManager> T getManagerByClass(Class<? extends PluginManager> clazz){
-		return (T) pluginManager.get(clazz);
-	}*/
+    /**
+     *
+     * @param clazz
+     * @return the Manager; null if nothing found.
+     */
+    /*
+     * @SuppressWarnings("unchecked") public <T extends PluginManager> T
+     * getManagerByClass(Class<? extends PluginManager> clazz){ return (T)
+     * pluginManager.get(clazz); }
+     */
 
-	@SuppressWarnings("unchecked")
-	public <T extends PluginConfig> T getPluginConfig() {
-		return (T) config;
-	}
+    @SuppressWarnings("unchecked")
+    public <T extends PluginConfig> T getPluginConfig() {
+        return (T) config;
+    }
 
-	public Map<Class<? extends PluginManager>, PluginManager> getPluginManagers() {
-		return pluginManagers;
-	}
+    public Map<Class<? extends PluginManager>, PluginManager> getPluginManagers() {
+        return pluginManagers;
+    }
 
-	public void registerManager(PluginManager manager){
-		pluginManagers.put(manager.getClass(), manager);
-	}
+    public void registerManager(PluginManager manager) {
+        pluginManagers.put(manager.getClass(), manager);
+    }
 
-	public <T extends PluginManager> T getManager(Class<? extends PluginManager> clazz){
-		return (T) pluginManagers.get(clazz);
-	}
+    public <T extends PluginManager> T getManager(Class<? extends PluginManager> clazz) {
+        return (T) pluginManagers.get(clazz);
+    }
 
-	public static void main(String[] ar){
-	    String msg = "123";
-	    int limit = 2;
-	    if(msg.length() <= limit){
-	        System.out.println(msg);
-	    }else{
-	        int count = (int) Math.ceil((double)msg.length() / limit);
-	        for(int i = 0; i < count; i++){
-	            int index = i * limit;
-	            if(i < count - 1){
-	                System.out.println(msg.substring(index, index + limit));
-	            }else{
-	                System.out.println(msg.substring(index, index + msg.length() % limit));
-	            }
-	        }
-	    }
-	}
+    public static void main(String[] ar) {
+        String msg = "123";
+        int limit = 2;
+        if (msg.length() <= limit) {
+            System.out.println(msg);
+        } else {
+            int count = (int) Math.ceil((double) msg.length() / limit);
+            for (int i = 0; i < count; i++) {
+                int index = i * limit;
+                if (i < count - 1) {
+                    System.out.println(msg.substring(index, index + limit));
+                } else {
+                    System.out.println(msg.substring(index, index + msg.length() % limit));
+                }
+            }
+        }
+    }
 }

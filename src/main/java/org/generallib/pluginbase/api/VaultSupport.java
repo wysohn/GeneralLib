@@ -25,39 +25,39 @@ import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 
 public class VaultSupport extends APISupport {
-	public Permission permission = null;
+    public Permission permission = null;
     public Economy economy = null;
     public Chat chat = null;
 
     public VaultSupport(PluginBase base) {
-		super(base);
-	}
+        super(base);
+    }
 
     @Override
-	public void init() throws Exception {
-    	if(setupPermissions()){
-    		base.getLogger().info("Vault permission hooked.");
-    	}
-    	if(setupChat()){
-    		base.getLogger().info("Vault chat hooked.");
-    	}
-    	if(setupEconomy()){
-    		base.getLogger().info("Vault economy hooked.");
-    	}
-	}
+    public void init() throws Exception {
+        if (setupPermissions()) {
+            base.getLogger().info("Vault permission hooked.");
+        }
+        if (setupChat()) {
+            base.getLogger().info("Vault chat hooked.");
+        }
+        if (setupEconomy()) {
+            base.getLogger().info("Vault economy hooked.");
+        }
+    }
 
-	private boolean setupPermissions()
-    {
-        RegisteredServiceProvider<Permission> permissionProvider = base.getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
+    private boolean setupPermissions() {
+        RegisteredServiceProvider<Permission> permissionProvider = base.getServer().getServicesManager()
+                .getRegistration(net.milkbowl.vault.permission.Permission.class);
         if (permissionProvider != null) {
             permission = permissionProvider.getProvider();
         }
         return (permission != null);
     }
 
-    private boolean setupChat()
-    {
-        RegisteredServiceProvider<Chat> chatProvider = base.getServer().getServicesManager().getRegistration(net.milkbowl.vault.chat.Chat.class);
+    private boolean setupChat() {
+        RegisteredServiceProvider<Chat> chatProvider = base.getServer().getServicesManager()
+                .getRegistration(net.milkbowl.vault.chat.Chat.class);
         if (chatProvider != null) {
             chat = chatProvider.getProvider();
         }
@@ -65,9 +65,9 @@ public class VaultSupport extends APISupport {
         return (chat != null);
     }
 
-    private boolean setupEconomy()
-    {
-        RegisteredServiceProvider<Economy> economyProvider = base.getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+    private boolean setupEconomy() {
+        RegisteredServiceProvider<Economy> economyProvider = base.getServer().getServicesManager()
+                .getRegistration(net.milkbowl.vault.economy.Economy.class);
         if (economyProvider != null) {
             economy = economyProvider.getProvider();
         }
@@ -75,15 +75,15 @@ public class VaultSupport extends APISupport {
         return (economy != null);
     }
 
-    public boolean isPermissionEnabled(){
+    public boolean isPermissionEnabled() {
         return permission != null;
     }
 
-    public boolean isEconomyEnabled(){
+    public boolean isEconomyEnabled() {
         return economy != null;
     }
 
-    public boolean isChatEnabled(){
+    public boolean isChatEnabled() {
         return chat != null;
     }
 }

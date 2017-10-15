@@ -19,5 +19,5 @@ package org.generallib.deeplearning.neuralnetwork;
 import org.jblas.DoubleMatrix;
 
 public interface ActivationFunction {
-	DoubleMatrix activate(DoubleMatrix matrix);
+    DoubleMatrix activate(DoubleMatrix matrix);
 }

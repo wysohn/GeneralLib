@@ -48,11 +48,11 @@ class Timer {
         startTime = -1;
         stopTime = -1;
     }
-    
+
     void start() {
         startTime = System.nanoTime();
     }
-    
+
     long stop() {
         stopTime = System.nanoTime();
         return stopTime - startTime;

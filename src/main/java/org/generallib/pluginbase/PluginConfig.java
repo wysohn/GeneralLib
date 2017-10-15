@@ -40,7 +40,8 @@ import org.generallib.serializetools.Utf8YamlConfiguration;
  * Child class only need to declare <b>public field with '_'</b> as _ will be
  * used to indicate the path. Fields with other than public modifier will be
  * ignored. Use {@link Comment} annotation to add comments. Comment annotation
- * has member <b>String[] comment</b>. ex) @Comment(comment = {"This","is","comment"})
+ * has member <b>String[] comment</b>. ex) @Comment(comment =
+ * {"This","is","comment"})
  *
  * <p>
  * For example) test_test field is equivalent to test.test in config
@@ -49,151 +50,155 @@ import org.generallib.serializetools.Utf8YamlConfiguration;
  * @author wysohn
  *
  */
-public abstract class PluginConfig implements PluginProcedure{
-/*	public static void main(String[] ar){
-		System.out.println(convertToConfigName("test_test_test"));
-		System.out.println(converToFieldName("test.test.test"));
-	}*/
+public abstract class PluginConfig implements PluginProcedure {
+    /*
+     * public static void main(String[] ar){
+     * System.out.println(convertToConfigName("test_test_test"));
+     * System.out.println(converToFieldName("test.test.test")); }
+     */
 
-	protected PluginBase base;
+    protected PluginBase base;
 
-	private FileConfiguration config;
-	private File file;
+    private FileConfiguration config;
+    private File file;
 
-	public int Command_Help_SentencePerPage = 6;
+    public int Command_Help_SentencePerPage = 6;
 
-	public int Languages_Double_DecimalPoints = 4;
+    public int Languages_Double_DecimalPoints = 4;
 
-	public boolean Plugin_Enabled = true;
-	public boolean Plugin_Debugging = false;
-	public String Plugin_Language_Default = "en";
-	public List<String> Plugin_Language_List = new ArrayList<String>(){{
-		add("en");
-		add("ko");
-	}};
-	public String Plugin_Prefix = "&6[&5?&6]";
+    public boolean Plugin_Enabled = true;
+    public boolean Plugin_Debugging = false;
+    public String Plugin_Language_Default = "en";
+    public List<String> Plugin_Language_List = new ArrayList<String>() {
+        {
+            add("en");
+            add("ko");
+        }
+    };
+    public String Plugin_Prefix = "&6[&5?&6]";
 
-	public String Plugin_ServerName = "yourServer";
+    public String Plugin_ServerName = "yourServer";
 
-	public boolean MySql_Enabled = false;
-	public String MySql_DBAddress = "localhost:3306";
-	public String MySql_DBName = "somedb";
-	public String MySql_DBUser = "root";
-	public String MySql_DBPassword = "1234";
+    public boolean MySql_Enabled = false;
+    public String MySql_DBAddress = "localhost:3306";
+    public String MySql_DBName = "somedb";
+    public String MySql_DBUser = "root";
+    public String MySql_DBPassword = "1234";
 
-	@Override
+    @Override
     public void onEnable(final PluginBase base) throws Exception {
-		this.base = base;
-		config = new Utf8YamlConfiguration();
+        this.base = base;
+        config = new Utf8YamlConfiguration();
 
-        if(!base.getDataFolder().exists())
+        if (!base.getDataFolder().exists())
             base.getDataFolder().mkdirs();
 
         file = new File(base.getDataFolder(), "config.yml");
-        if(!file.exists())
+        if (!file.exists())
             file.createNewFile();
 
         config.load(file);
 
         validateAndLoad();
         save();
-	}
+    }
 
-	@Override
-    public void onDisable(PluginBase base) throws Exception{
-		save();
-	}
+    @Override
+    public void onDisable(PluginBase base) throws Exception {
+        save();
+    }
 
-	@Override
+    @Override
     public void onReload(PluginBase base) throws Exception {
-		reload();
-	}
+        reload();
+    }
 
-	private static String convertToConfigName(String fieldName){
-		return fieldName.replaceAll("_", ".");
-	}
+    private static String convertToConfigName(String fieldName) {
+        return fieldName.replaceAll("_", ".");
+    }
 
-	private static String converToFieldName(String configKey){
-		return configKey.replaceAll("\\.", "_");
-	}
+    private static String converToFieldName(String configKey) {
+        return configKey.replaceAll("\\.", "_");
+    }
 
-	/**
-	 * check all the config and add necessary/remove unnecessary configs.
-	 */
-	protected void validateAndLoad(){
-		base.getLogger().info("Validating config...");
+    /**
+     * check all the config and add necessary/remove unnecessary configs.
+     */
+    protected void validateAndLoad() {
+        base.getLogger().info("Validating config...");
 
-		Field[] fields = this.getClass().getFields();
+        Field[] fields = this.getClass().getFields();
 
-		int addedNew = 0;
-		//fill empty config
-		for(Field field : fields){
-			try {
-				String configName = convertToConfigName(field.getName());
-				Object obj = field.get(this);
+        int addedNew = 0;
+        // fill empty config
+        for (Field field : fields) {
+            try {
+                String configName = convertToConfigName(field.getName());
+                Object obj = field.get(this);
 
-				if(!config.contains(configName)){
-					config.set(configName, obj);
-					addedNew++;
-				}
-			} catch (IllegalArgumentException | IllegalAccessException e) {
-				base.getLogger().severe(e.getMessage());
-			}
-		}
+                if (!config.contains(configName)) {
+                    config.set(configName, obj);
+                    addedNew++;
+                }
+            } catch (IllegalArgumentException | IllegalAccessException e) {
+                base.getLogger().severe(e.getMessage());
+            }
+        }
 
-		base.getLogger().info("Added ["+addedNew+"] new configs with default value.");
+        base.getLogger().info("Added [" + addedNew + "] new configs with default value.");
 
-		Set<String> fieldNames = new HashSet<String>();
-		for(Field field : fields)
-			fieldNames.add(field.getName());
+        Set<String> fieldNames = new HashSet<String>();
+        for (Field field : fields)
+            fieldNames.add(field.getName());
 
-		int deletedOld = 0;
-		int loaded = 0;
-		//delete non existing config or set value with existing config
-		Configuration root = config.getRoot();
-		Set<String> keys = root.getKeys(true);
-		for(String key : keys){
-			try {
-				if(config.isConfigurationSection(key))
-					continue;
+        int deletedOld = 0;
+        int loaded = 0;
+        // delete non existing config or set value with existing config
+        Configuration root = config.getRoot();
+        Set<String> keys = root.getKeys(true);
+        for (String key : keys) {
+            try {
+                if (config.isConfigurationSection(key))
+                    continue;
 
-				if(key.contains("_COMMENT_"))
-					continue;
+                if (key.contains("_COMMENT_"))
+                    continue;
 
-				String fieldName = converToFieldName(key);
+                String fieldName = converToFieldName(key);
 
-				if(!fieldNames.contains(fieldName)){
-					config.set(key, null);
-					deletedOld++;
-				}else{
-					Field field = this.getClass().getField(fieldName);
+                if (!fieldNames.contains(fieldName)) {
+                    config.set(key, null);
+                    deletedOld++;
+                } else {
+                    Field field = this.getClass().getField(fieldName);
 
-					field.set(this, config.get(key));
-					loaded++;
-				}
-			} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-				base.getLogger().severe(e.getMessage());
-			}
-		}
+                    field.set(this, config.get(key));
+                    loaded++;
+                }
+            } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+                base.getLogger().severe(e.getMessage());
+            }
+        }
 
-		try {
-			save();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-		base.getLogger().info("Deleted ["+deletedOld+"] old configs and loaded ["+loaded+"] configs.");
+        try {
+            save();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        base.getLogger().info("Deleted [" + deletedOld + "] old configs and loaded [" + loaded + "] configs.");
 
-		base.getLogger().info("Validation and Loading complete!");
-	}
+        base.getLogger().info("Validation and Loading complete!");
+    }
 
-	/**
-	 * save current values into the config file
-	 * @throws IOException
-	 */
-	public void save() throws IOException{
-		base.getLogger().info("Saving to ["+file.getName()+"]...");
+    /**
+     * save current values into the config file
+     * 
+     * @throws IOException
+     */
+    public void save() throws IOException {
+        base.getLogger().info("Saving to [" + file.getName() + "]...");
 
-		Field[] fields = this.getClass().getFields();
+        Field[] fields = this.getClass().getFields();
         for (Field field : fields) {
             try {
                 Object obj = field.get(this);
@@ -208,32 +213,33 @@ public abstract class PluginConfig implements PluginProcedure{
         FileOutputStream stream = new FileOutputStream(file);
         OutputStreamWriter writer = new OutputStreamWriter(stream, Charset.forName("UTF-8"));
 
-		String output = config.saveToString();
-		String[] split = output.split("\n");
-		for(String s : split){
-			if(s.contains("_COMMENT_")){
-				writer.write("#"+s.replaceAll("'", "").substring(s.indexOf(':') + 1) + "\n");
-			}else{
-				writer.write(s + "\n");
-			}
-		}
+        String output = config.saveToString();
+        String[] split = output.split("\n");
+        for (String s : split) {
+            if (s.contains("_COMMENT_")) {
+                writer.write("#" + s.replaceAll("'", "").substring(s.indexOf(':') + 1) + "\n");
+            } else {
+                writer.write(s + "\n");
+            }
+        }
 
-		writer.close();
-		stream.close();
+        writer.close();
+        stream.close();
 
-		base.getLogger().info("Complete!");
-	}
+        base.getLogger().info("Complete!");
+    }
 
-	/**
-	 * Override all current values using values in config file
-	 * @throws IOException
-	 * @throws InvalidConfigurationException
-	 */
-	public void reload() throws IOException, InvalidConfigurationException{
-		base.getLogger().info("Loading ["+file.getName()+"]...");
-		config.load(file);
-		base.getLogger().info("Complete!");
+    /**
+     * Override all current values using values in config file
+     * 
+     * @throws IOException
+     * @throws InvalidConfigurationException
+     */
+    public void reload() throws IOException, InvalidConfigurationException {
+        base.getLogger().info("Loading [" + file.getName() + "]...");
+        config.load(file);
+        base.getLogger().info("Complete!");
 
-		validateAndLoad();
-	}
+        validateAndLoad();
+    }
 }

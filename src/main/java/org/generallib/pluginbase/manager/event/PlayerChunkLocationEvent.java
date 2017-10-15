@@ -23,17 +23,20 @@ import org.bukkit.event.player.PlayerEvent;
 import org.generallib.pluginbase.constants.SimpleChunkLocation;
 
 /**
- * This event fires depends on the player's block location. Unlike the PlayerMoveEvent, it only checks whether a player moved
- *  from a chunk to another chunk. This significantly reduces the server load when you want to check player entering area, etc.
+ * This event fires depends on the player's block location. Unlike the
+ * PlayerMoveEvent, it only checks whether a player moved from a chunk to
+ * another chunk. This significantly reduces the server load when you want to
+ * check player entering area, etc.
+ * 
  * @author wysohn
  *
  */
-public class PlayerChunkLocationEvent extends PlayerEvent implements Cancellable{
+public class PlayerChunkLocationEvent extends PlayerEvent implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
-	private boolean cancelled;
+    private boolean cancelled;
 
-	private final SimpleChunkLocation from;
-	private final SimpleChunkLocation to;
+    private final SimpleChunkLocation from;
+    private final SimpleChunkLocation to;
 
     public PlayerChunkLocationEvent(Player who, SimpleChunkLocation from, SimpleChunkLocation to) {
         super(who);
@@ -43,22 +46,22 @@ public class PlayerChunkLocationEvent extends PlayerEvent implements Cancellable
 
     @Override
     public boolean isCancelled() {
-		return cancelled;
-	}
+        return cancelled;
+    }
 
-	@Override
+    @Override
     public void setCancelled(boolean cancel) {
-		cancelled = cancel;
-	}
+        cancelled = cancel;
+    }
 
-	@Override
+    @Override
     public HandlerList getHandlers() {
-		return handlers;
-	}
+        return handlers;
+    }
 
-	public static HandlerList getHandlerList() {
-		return handlers;
-	}
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
 
     public SimpleChunkLocation getFrom() {
         return from;

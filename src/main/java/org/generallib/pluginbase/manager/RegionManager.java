@@ -24,11 +24,14 @@ import org.generallib.pluginbase.constants.SimpleChunkLocation;
 import org.generallib.pluginbase.constants.SimpleLocation;
 import org.generallib.pluginbase.language.DefaultLanguages;
 
-public abstract class RegionManager<T extends PluginBase, V extends ClaimInfo> extends ElementCachingManager<Area, V> implements Listener{
+public abstract class RegionManager<T extends PluginBase, V extends ClaimInfo> extends ElementCachingManager<Area, V>
+        implements Listener {
     private final Map<SimpleChunkLocation, Set<Area>> regionsCache = new HashMap<>();
     private final Set<Class<? extends Event>> registeredEventTypes = new HashSet<>();
 
-    private GeneralEventHandle generalEventHandle = (e, loc, entity) -> {return false;};
+    private GeneralEventHandle generalEventHandle = (e, loc, entity) -> {
+        return false;
+    };
 
     public RegionManager(T base, int loadPriority) {
         super(base, loadPriority);
@@ -62,7 +65,7 @@ public abstract class RegionManager<T extends PluginBase, V extends ClaimInfo> e
         return registeredEventTypes;
     }
 
-    protected void initEvent(Class<? extends Event> event, final EventHandle eventHandle){
+    protected void initEvent(Class<? extends Event> event, final EventHandle eventHandle) {
         registeredEventTypes.add(event);
 
         Bukkit.getPluginManager().registerEvent(event, this, EventPriority.NORMAL, new EventExecutor() {
@@ -70,24 +73,24 @@ public abstract class RegionManager<T extends PluginBase, V extends ClaimInfo> e
             @Override
             public void execute(Listener arg0, Event arg1) throws EventException {
                 Location loc = eventHandle.getLocation(arg1);
-                if(loc == null)
+                if (loc == null)
                     return;
 
                 Entity cause = eventHandle.getCause(arg1);
 
-                //canceled
-                if(generalEventHandle != null && generalEventHandle.preEvent(arg1, loc, cause)) {
+                // canceled
+                if (generalEventHandle != null && generalEventHandle.preEvent(arg1, loc, cause)) {
                     return;
                 }
 
                 SimpleLocation sloc = LocationUtil.convertToSimpleLocation(loc);
 
                 V claim = RegionManager.this.getAreaInfo(sloc);
-                if(claim == null)
+                if (claim == null)
                     return;
 
-                //don't protect if chunk is public
-                if(claim.isPublic())
+                // don't protect if chunk is public
+                if (claim.isPublic())
                     return;
 
                 if (cause != null && cause instanceof Player) {
@@ -98,19 +101,19 @@ public abstract class RegionManager<T extends PluginBase, V extends ClaimInfo> e
 
                     UUID uuid = p.getUniqueId();
 
-                    if(uuid.equals(claim.getOwner()))
+                    if (uuid.equals(claim.getOwner()))
                         return;
 
-                    if(claim.getTrusts().contains(uuid))
+                    if (claim.getTrusts().contains(uuid))
                         return;
                 }
 
-                if(cause instanceof Player){
+                if (cause instanceof Player) {
                     base.sendMessage(cause, DefaultLanguages.General_NotEnoughPermission);
                 }
 
-                //canceled
-                if(generalEventHandle != null) {
+                // canceled
+                if (generalEventHandle != null) {
                     generalEventHandle.postEvent(arg1);
                 }
             }
@@ -140,20 +143,22 @@ public abstract class RegionManager<T extends PluginBase, V extends ClaimInfo> e
         return null;
     }
 
-    public V getAreaInfo(String name){
-        if(name == null)
+    public V getAreaInfo(String name) {
+        if (name == null)
             return null;
 
         return this.get(name, false);
     }
 
     /**
-     * Set info of area. If 'info' is null, the data connected with key 'area' will be removed.
+     * Set info of area. If 'info' is null, the data connected with key 'area'
+     * will be removed.
+     * 
      * @param area
      * @param info
      */
     public void setAreaInfo(Area area, V info) {
-        //first schedule update task
+        // first schedule update task
         this.save(area, info);
 
         synchronized (regionsCache) {
@@ -169,7 +174,7 @@ public abstract class RegionManager<T extends PluginBase, V extends ClaimInfo> e
     }
 
     public void removeAreaInfo(Area area) {
-        //first schedule update task
+        // first schedule update task
         this.save(area, null);
 
         synchronized (regionsCache) {
@@ -186,14 +191,14 @@ public abstract class RegionManager<T extends PluginBase, V extends ClaimInfo> e
      *         'after' already exist; true otherwise.
      */
     public boolean resizeArea(Area before, Area after) {
-        if(this.get(after, false) != null)
+        if (this.get(after, false) != null)
             return false;
 
         V info = this.get(before, false);
-        if(info == null)
+        if (info == null)
             return false;
 
-        //first schedule update task
+        // first schedule update task
         this.save(before, null);
         this.save(after, info, new SaveHandle() {
 
@@ -204,11 +209,11 @@ public abstract class RegionManager<T extends PluginBase, V extends ClaimInfo> e
 
             @Override
             public void postSave() {
-                synchronized(regionsCache) {
-                    //clean up cache
+                synchronized (regionsCache) {
+                    // clean up cache
                     removeAreaCache(before);
 
-                    //re-cache claim info
+                    // re-cache claim info
                     setAreaCache(after);
                 }
             }
@@ -220,13 +225,14 @@ public abstract class RegionManager<T extends PluginBase, V extends ClaimInfo> e
 
     /**
      * This method is not thread safe.
+     * 
      * @param area
      * @param info
      */
     private void setAreaCache(Area area) {
-        for(SimpleChunkLocation scloc : Area.getAllChunkLocations(area)) {
+        for (SimpleChunkLocation scloc : Area.getAllChunkLocations(area)) {
             Set<Area> areas = regionsCache.get(scloc);
-            if(areas == null) {
+            if (areas == null) {
                 areas = new HashSet<>();
                 regionsCache.put(scloc, areas);
             }
@@ -237,6 +243,7 @@ public abstract class RegionManager<T extends PluginBase, V extends ClaimInfo> e
 
     /**
      * This method is not thread safe.
+     * 
      * @param area
      */
     private void removeAreaCache(Area area) {
@@ -252,8 +259,9 @@ public abstract class RegionManager<T extends PluginBase, V extends ClaimInfo> e
     }
 
     /**
-     * get all the area that is conflicting with given area. This does not include the area itself.
-     * It's quite a CPU intensive work; use it wisely
+     * get all the area that is conflicting with given area. This does not
+     * include the area itself. It's quite a CPU intensive work; use it wisely
+     * 
      * @param area
      * @return never be null; can be empty if no conflicts are found
      */
@@ -261,17 +269,17 @@ public abstract class RegionManager<T extends PluginBase, V extends ClaimInfo> e
         Set<Area> conflicts = new HashSet<>();
 
         Set<SimpleChunkLocation> sclocs = Area.getAllChunkLocations(area);
-        synchronized(regionsCache) {
-            for(SimpleChunkLocation scloc : sclocs){
+        synchronized (regionsCache) {
+            for (SimpleChunkLocation scloc : sclocs) {
                 Set<Area> areas = this.regionsCache.get(scloc);
-                if(areas == null)
+                if (areas == null)
                     continue;
 
-                for(Area areaOther : areas){
-                    if(area.equals(areaOther))
+                for (Area areaOther : areas) {
+                    if (area.equals(areaOther))
                         continue;
 
-                    if(Area.isConflicting(area, areaOther)){
+                    if (Area.isConflicting(area, areaOther)) {
                         conflicts.add(areaOther);
                     }
                 }
@@ -302,11 +310,13 @@ public abstract class RegionManager<T extends PluginBase, V extends ClaimInfo> e
 
     /**
      * The handle that is responsible for each Bukkit API events.
+     * 
      * @author wysohn
      *
      */
-    protected interface EventHandle{
+    protected interface EventHandle {
         Entity getCause(Event e);
+
         Location getLocation(Event e);
     }
 
@@ -320,13 +330,19 @@ public abstract class RegionManager<T extends PluginBase, V extends ClaimInfo> e
      * @author wysohn
      *
      */
-    protected interface GeneralEventHandle{
+    protected interface GeneralEventHandle {
         /**
-         * This method will be invoked before any events will be hand over to the EventHandles.
-         * @param e event to handle
-         * @param cause the entity caused the event
-         * @param loc location where event occur
-         * @return true if event should not be received by all EventHandles; false otherwise.
+         * This method will be invoked before any events will be hand over to
+         * the EventHandles.
+         * 
+         * @param e
+         *            event to handle
+         * @param cause
+         *            the entity caused the event
+         * @param loc
+         *            location where event occur
+         * @return true if event should not be received by all EventHandles;
+         *         false otherwise.
          */
         public boolean preEvent(Event e, Location loc, Entity cause);
 
@@ -339,7 +355,7 @@ public abstract class RegionManager<T extends PluginBase, V extends ClaimInfo> e
          *            event to handle
          */
         default public void postEvent(Event e) {
-            if(e instanceof Cancellable)
+            if (e instanceof Cancellable)
                 ((Cancellable) e).setCancelled(true);
         }
     }

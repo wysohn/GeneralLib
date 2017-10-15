@@ -35,115 +35,122 @@ import org.generallib.nms.world.BlockFilter;
 import org.generallib.nms.world.INmsWorldManager;
 
 //just a fake plugin
-public class FakePlugin extends JavaPlugin{
-	public static Plugin instance;
+public class FakePlugin extends JavaPlugin {
+    public static Plugin instance;
 
-	public static INmsWorldManager nmsWorldManager;
-	public static INmsEntityManager nmsEntityManager;
-	public static INmsParticleSender nmsParticleSender;
+    public static INmsWorldManager nmsWorldManager;
+    public static INmsEntityManager nmsEntityManager;
+    public static INmsParticleSender nmsParticleSender;
 
-	@Override
-	public void onEnable() {
-		instance = this;
+    @Override
+    public void onEnable() {
+        instance = this;
 
-		String packageName = getServer().getClass().getPackage().getName();
-		String version = packageName.substring(packageName.lastIndexOf('.') + 1);
+        String packageName = getServer().getClass().getPackage().getName();
+        String version = packageName.substring(packageName.lastIndexOf('.') + 1);
 
-		try {
-			initWorldNms(version);
-			initEntityrNms(version);
-			initParticleNms(version);
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-			getLogger().severe("Version ["+version+"] is not supported by this plugin.");
-			this.setEnabled(false);
-		}
-	}
+        try {
+            initWorldNms(version);
+            initEntityrNms(version);
+            initParticleNms(version);
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            getLogger().severe("Version [" + version + "] is not supported by this plugin.");
+            this.setEnabled(false);
+        }
+    }
 
-	private static final String packageName = "org.generallib.nms";
-	private void initWorldNms(String version) throws ClassNotFoundException, InstantiationException, IllegalAccessException{
-		Class<?> clazz = Class.forName(packageName+".world."+version+"."+"NmsChunkManager");
-		nmsWorldManager = (INmsWorldManager) clazz.newInstance();
-	}
+    private static final String packageName = "org.generallib.nms";
 
-	private void initEntityrNms(String version) throws ClassNotFoundException, InstantiationException, IllegalAccessException{
-		Class<?> clazz = Class.forName(packageName+".entity."+version+"."+"NmsEntityProvider");
-		nmsEntityManager = (INmsEntityManager) clazz.newInstance();
-	}
+    private void initWorldNms(String version)
+            throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+        Class<?> clazz = Class.forName(packageName + ".world." + version + "." + "NmsChunkManager");
+        nmsWorldManager = (INmsWorldManager) clazz.newInstance();
+    }
 
-	private void initParticleNms(String version) throws ClassNotFoundException, InstantiationException, IllegalAccessException{
-		Class<?> clazz = Class.forName(packageName+".particle."+version+"."+"NmsParticleSender");
-		nmsParticleSender = (INmsParticleSender) clazz.newInstance();
-	}
+    private void initEntityrNms(String version)
+            throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+        Class<?> clazz = Class.forName(packageName + ".entity." + version + "." + "NmsEntityProvider");
+        nmsEntityManager = (INmsEntityManager) clazz.newInstance();
+    }
 
-	private static Set<Integer> ores = new HashSet<Integer>(){{
-		for(Material mat : Material.values())
-			if(mat.name().endsWith("_ORE"))
-				add(mat.getId());
-	}};
-	private static UUID temp = UUID.randomUUID();
-	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if(sender instanceof Player && !((Player) sender).isOp())
-			return true;
+    private void initParticleNms(String version)
+            throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+        Class<?> clazz = Class.forName(packageName + ".particle." + version + "." + "NmsParticleSender");
+        nmsParticleSender = (INmsParticleSender) clazz.newInstance();
+    }
 
-		if(!label.equals("glib"))
-			return true;
+    private static Set<Integer> ores = new HashSet<Integer>() {
+        {
+            for (Material mat : Material.values())
+                if (mat.name().endsWith("_ORE"))
+                    add(mat.getId());
+        }
+    };
+    private static UUID temp = UUID.randomUUID();
 
-		try{
-			if(args.length == 1){
-				if(args[0].equalsIgnoreCase("glow")){
-					Player player = (Player) sender;
-					int x = player.getLocation().getBlockX();
-					int y = player.getLocation().getBlockY();
-					int z = player.getLocation().getBlockZ();
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (sender instanceof Player && !((Player) sender).isOp())
+            return true;
 
-					nmsParticleSender.showGlowingBlock(new Player[]{player}, -700, temp, x, y, z);
-				} else if (args[0].equalsIgnoreCase("del")) {
-					Player player = (Player) sender;
+        if (!label.equals("glib"))
+            return true;
 
-					nmsEntityManager.destroyEntity(new Player[] { player }, new int[] { -700 });
-				} else if (args[0].equalsIgnoreCase("color")) {
-					Player player = (Player) sender;
+        try {
+            if (args.length == 1) {
+                if (args[0].equalsIgnoreCase("glow")) {
+                    Player player = (Player) sender;
+                    int x = player.getLocation().getBlockX();
+                    int y = player.getLocation().getBlockY();
+                    int z = player.getLocation().getBlockZ();
 
-					nmsEntityManager.sendTeamColor(new Player[] { player }, "temp", ChatColor.RED + "",
-							new HashSet<String>() {
-								{
-									add(temp.toString());
-								}
-							}, 2);
-				}
-			}else if(args.length == 3){
-				if(args[0].equalsIgnoreCase("chunk")){
-					Player player = (Player) sender;
-					int i = Integer.parseInt(args[1]);
-					int j = Integer.parseInt(args[2]);
+                    nmsParticleSender.showGlowingBlock(new Player[] { player }, -700, temp, x, y, z);
+                } else if (args[0].equalsIgnoreCase("del")) {
+                    Player player = (Player) sender;
 
-					nmsWorldManager.regenerateChunk(player.getWorld(), i, j, new BlockFilter(){
-						@Override
-						public boolean allow(int blockID, byte data) {
-							return ores.contains(blockID);
-						}
-					});
-				}
-			}else if(args.length == 4){
-				if(args[0].equalsIgnoreCase("chunk")){
-					World world = Bukkit.getWorld(args[3]);
-					int i = Integer.parseInt(args[1]);
-					int j = Integer.parseInt(args[2]);
+                    nmsEntityManager.destroyEntity(new Player[] { player }, new int[] { -700 });
+                } else if (args[0].equalsIgnoreCase("color")) {
+                    Player player = (Player) sender;
 
-					nmsWorldManager.regenerateChunk(world, i, j, new BlockFilter(){
-						@Override
-						public boolean allow(int blockID, byte data) {
-							return ores.contains(blockID);
-						}
-					});
-				}
-			}
-		}catch(Exception e){
-			sender.sendMessage(ChatColor.RED+e.getMessage());
-			return true;
-		}
+                    nmsEntityManager.sendTeamColor(new Player[] { player }, "temp", ChatColor.RED + "",
+                            new HashSet<String>() {
+                                {
+                                    add(temp.toString());
+                                }
+                            }, 2);
+                }
+            } else if (args.length == 3) {
+                if (args[0].equalsIgnoreCase("chunk")) {
+                    Player player = (Player) sender;
+                    int i = Integer.parseInt(args[1]);
+                    int j = Integer.parseInt(args[2]);
 
-		return true;
-	}
+                    nmsWorldManager.regenerateChunk(player.getWorld(), i, j, new BlockFilter() {
+                        @Override
+                        public boolean allow(int blockID, byte data) {
+                            return ores.contains(blockID);
+                        }
+                    });
+                }
+            } else if (args.length == 4) {
+                if (args[0].equalsIgnoreCase("chunk")) {
+                    World world = Bukkit.getWorld(args[3]);
+                    int i = Integer.parseInt(args[1]);
+                    int j = Integer.parseInt(args[2]);
+
+                    nmsWorldManager.regenerateChunk(world, i, j, new BlockFilter() {
+                        @Override
+                        public boolean allow(int blockID, byte data) {
+                            return ores.contains(blockID);
+                        }
+                    });
+                }
+            }
+        } catch (Exception e) {
+            sender.sendMessage(ChatColor.RED + e.getMessage());
+            return true;
+        }
+
+        return true;
+    }
 }

@@ -32,40 +32,50 @@ import copy.com.google.gson.Gson;
 import copy.com.google.gson.GsonBuilder;
 
 public abstract class Database<T> {
-	private static GsonBuilder builder = new GsonBuilder().excludeFieldsWithModifiers(Modifier.TRANSIENT, Modifier.STATIC)
-			.enableComplexMapKeySerialization()
-			.registerTypeAdapter(Location.class, new LocationSerializer())
-			.registerTypeAdapter(ItemStack.class, new ItemStackSerializer())
-			.registerTypeAdapter(ItemStack[].class, new ItemStackArraySerializer())
-			.registerTypeAdapter(UUID.class, new UUIDSerializer());
-	public static void registerTypeAdapter(Class<?> clazz, Object obj){
-		synchronized(builder){
-			builder.registerTypeAdapter(clazz, obj);
-			//Bukkit.getLogger().info("Serializer -- ["+clazz.getSimpleName()+", "+obj+"]");
-		}
-	}
+    private static GsonBuilder builder = new GsonBuilder()
+            .excludeFieldsWithModifiers(Modifier.TRANSIENT, Modifier.STATIC).enableComplexMapKeySerialization()
+            .registerTypeAdapter(Location.class, new LocationSerializer())
+            .registerTypeAdapter(ItemStack.class, new ItemStackSerializer())
+            .registerTypeAdapter(ItemStack[].class, new ItemStackArraySerializer())
+            .registerTypeAdapter(UUID.class, new UUIDSerializer());
 
-	/**
-	 * Deserialize the data from the database and return
-	 * @param key the key of the data
-	 * @param def default value to be used if data was not found.
-	 * @return the deserialized data
-	 */
-	public abstract T load(String key, T def);
+    public static void registerTypeAdapter(Class<?> clazz, Object obj) {
+        synchronized (builder) {
+            builder.registerTypeAdapter(clazz, obj);
+            // Bukkit.getLogger().info("Serializer --
+            // ["+clazz.getSimpleName()+", "+obj+"]");
+        }
+    }
 
-	/**
-	 * Serialize the data and put it into the database.
-	 * @param key the key to pair the data with
-	 * @param value the data to be saved
-	 */
-	public abstract void save(String key, T value);
+    /**
+     * Deserialize the data from the database and return
+     * 
+     * @param key
+     *            the key of the data
+     * @param def
+     *            default value to be used if data was not found.
+     * @return the deserialized data
+     */
+    public abstract T load(String key, T def);
 
-	/**
-	 * Check if the key exists in the database
-	 * @param key the key to check
-	 * @return true if exists; false if not
-	 */
-	public abstract boolean has(String key);
+    /**
+     * Serialize the data and put it into the database.
+     * 
+     * @param key
+     *            the key to pair the data with
+     * @param value
+     *            the data to be saved
+     */
+    public abstract void save(String key, T value);
+
+    /**
+     * Check if the key exists in the database
+     * 
+     * @param key
+     *            the key to check
+     * @return true if exists; false if not
+     */
+    public abstract boolean has(String key);
 
     /**
      * get list of all keys in this database. The operation time of this method
@@ -74,30 +84,55 @@ public abstract class Database<T> {
      *
      * @return
      */
-	public abstract Set<String> getKeys();
+    public abstract Set<String> getKeys();
 
-	/**
-	 * Clear all data in the database. <b> Use it carefully as it will immediately clear up the database</b>
-	 */
-	public abstract void clear();
+    /**
+     * Clear all data in the database. <b> Use it carefully as it will
+     * immediately clear up the database</b>
+     */
+    public abstract void clear();
 
-	private Gson gson;
-	public String serialize(Object obj){
-		if(gson == null) gson = builder.create();
+    private Gson gson;
 
-		return gson.toJson(obj);
-	}
+    /**
+     * Serialize the object using the class type of object itself.
+     * 
+     * @param obj
+     * @return serialized string
+     */
+    public String serialize(Object obj) {
+        if (gson == null)
+            gson = builder.create();
 
-	public String serialize(Object obj, Type clazz){
-		if(gson == null) gson = builder.create();
+        return gson.toJson(obj);
+    }
 
-		return gson.toJson(obj, clazz);
-	}
+    /**
+     * Serialize the object using specified class type.
+     * 
+     * @param obj
+     * @param clazz
+     * @return serialzied string
+     */
+    public String serialize(Object obj, Type clazz) {
+        if (gson == null)
+            gson = builder.create();
 
-	public Object deserialize(String ser, Type clazz){
-		if(gson == null) gson = builder.create();
+        return gson.toJson(obj, clazz);
+    }
 
-		return gson.fromJson(ser, clazz);
-	}
+    /**
+     * Deserialize the serialized string into the specified type of object.
+     * 
+     * @param ser
+     * @param clazz
+     * @return deserialized object
+     */
+    public Object deserialize(String ser, Type clazz) {
+        if (gson == null)
+            gson = builder.create();
+
+        return gson.fromJson(ser, clazz);
+    }
 
 }

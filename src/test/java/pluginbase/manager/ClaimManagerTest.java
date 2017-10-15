@@ -29,11 +29,11 @@ import org.powermock.reflect.Whitebox;
 import pluginbase.manager.ElementCachingManagerTest.TestConfig;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ClaimManagerTest.TestPlugin.class, Logger.class})
+@PrepareForTest({ ClaimManagerTest.TestPlugin.class, Logger.class })
 public class ClaimManagerTest {
 
     @Test
-    public void testAddRemoveClaim() throws Exception{
+    public void testAddRemoveClaim() throws Exception {
         TestPlugin mockBase = PowerMock.createMock(TestPlugin.class);
         Logger mockLogger = PowerMock.createMock(Logger.class);
 
@@ -45,7 +45,7 @@ public class ClaimManagerTest {
         EasyMock.expect(mockBase.getLogger()).andStubReturn(mockLogger);
 
         mockLogger.info(EasyMock.anyString());
-        EasyMock.expectLastCall().andAnswer(new IAnswer<Void>(){
+        EasyMock.expectLastCall().andAnswer(new IAnswer<Void>() {
 
             @Override
             public Void answer() throws Throwable {
@@ -67,8 +67,8 @@ public class ClaimManagerTest {
 
         manager.setAreaInfo(area, info);
 
-        System.out.println("Current caches: "+Whitebox.getField(manager.getClass(), "cachedElements").get(manager));
-        System.out.println("Current namemap: "+Whitebox.getField(manager.getClass(), "nameMap").get(manager));
+        System.out.println("Current caches: " + Whitebox.getField(manager.getClass(), "cachedElements").get(manager));
+        System.out.println("Current namemap: " + Whitebox.getField(manager.getClass(), "nameMap").get(manager));
 
         TestClaimInfo infoOut;
 
@@ -87,7 +87,7 @@ public class ClaimManagerTest {
     }
 
     @Test
-    public void testResizeClaim() throws Exception{
+    public void testResizeClaim() throws Exception {
         TestPlugin mockBase = PowerMock.createMock(TestPlugin.class);
         Logger mockLogger = PowerMock.createMock(Logger.class);
 
@@ -99,7 +99,7 @@ public class ClaimManagerTest {
         EasyMock.expect(mockBase.getLogger()).andStubReturn(mockLogger);
 
         mockLogger.info(EasyMock.anyString());
-        EasyMock.expectLastCall().andAnswer(new IAnswer<Void>(){
+        EasyMock.expectLastCall().andAnswer(new IAnswer<Void>() {
 
             @Override
             public Void answer() throws Throwable {
@@ -122,8 +122,8 @@ public class ClaimManagerTest {
         manager.setAreaInfo(area, info);
 
         System.out.println("Init:");
-        System.out.println("Current caches: "+Whitebox.getField(manager.getClass(), "cachedElements").get(manager));
-        System.out.println("Current namemap: "+Whitebox.getField(manager.getClass(), "nameMap").get(manager));
+        System.out.println("Current caches: " + Whitebox.getField(manager.getClass(), "cachedElements").get(manager));
+        System.out.println("Current namemap: " + Whitebox.getField(manager.getClass(), "nameMap").get(manager));
 
         TestClaimInfo infoOut;
         Area newArea;
@@ -134,9 +134,9 @@ public class ClaimManagerTest {
         System.out.println("Resize -5,-5,-5,-1,-1,-1 -> -5,0,0,10,5,7:");
         manager.resizeArea(infoOut.area, newArea);
 
-        System.out.println("Current caches: "+Whitebox.getField(manager.getClass(), "cachedElements").get(manager));
-        System.out.println("Current namemap: "+Whitebox.getField(manager.getClass(), "nameMap").get(manager));
-        assertEquals(new TestClaimInfo(newArea),manager.getAreaInfo("TestClaim1"));
+        System.out.println("Current caches: " + Whitebox.getField(manager.getClass(), "cachedElements").get(manager));
+        System.out.println("Current namemap: " + Whitebox.getField(manager.getClass(), "nameMap").get(manager));
+        assertEquals(new TestClaimInfo(newArea), manager.getAreaInfo("TestClaim1"));
 
         infoOut = manager.getAreaInfo("TestClaim1");
 
@@ -144,21 +144,21 @@ public class ClaimManagerTest {
         System.out.println("Resize -5,0,0,10,5,7 -> -50,-10,-50,0,0,0:");
         manager.resizeArea(infoOut.area, newArea);
 
-        System.out.println("Current caches: "+Whitebox.getField(manager.getClass(), "cachedElements").get(manager));
-        System.out.println("Current namemap: "+Whitebox.getField(manager.getClass(), "nameMap").get(manager));
+        System.out.println("Current caches: " + Whitebox.getField(manager.getClass(), "cachedElements").get(manager));
+        System.out.println("Current namemap: " + Whitebox.getField(manager.getClass(), "nameMap").get(manager));
         assertEquals(new TestClaimInfo(newArea), manager.getAreaInfo("TestClaim1"));
 
         newArea = new Area(new SimpleLocation("world", -50, -10, -50), new SimpleLocation("world", 0, 0, 0));
         System.out.println("Resize -50,-10,-50,0,0,0 -> -50,-10,-50,0,0,0 (fail test):");
 
-        System.out.println("Current caches: "+Whitebox.getField(manager.getClass(), "cachedElements").get(manager));
-        System.out.println("Current namemap: "+Whitebox.getField(manager.getClass(), "nameMap").get(manager));
+        System.out.println("Current caches: " + Whitebox.getField(manager.getClass(), "cachedElements").get(manager));
+        System.out.println("Current namemap: " + Whitebox.getField(manager.getClass(), "nameMap").get(manager));
         assertFalse(manager.resizeArea(infoOut.area, newArea));
 
         Whitebox.invokeMethod(manager, "onDisable");
     }
 
-    public static class TestPlugin extends PluginBase{
+    public static class TestPlugin extends PluginBase {
 
         @Override
         protected void preEnable() {
@@ -168,7 +168,7 @@ public class ClaimManagerTest {
 
     }
 
-    public static class TestManager extends RegionManager<TestPlugin, TestClaimInfo>{
+    public static class TestManager extends RegionManager<TestPlugin, TestClaimInfo> {
 
         public TestManager(TestPlugin base, int loadPriority) {
             super(base, loadPriority);
@@ -198,9 +198,10 @@ public class ClaimManagerTest {
         }
     }
 
-    public static class TestClaimInfo implements ClaimInfo{
+    public static class TestClaimInfo implements ClaimInfo {
         transient Area area;
         String areaName;
+
         public TestClaimInfo(Area area) {
             super();
             this.area = area;

@@ -19,6 +19,6 @@ package org.generallib.database.serialize;
 import copy.com.google.gson.JsonDeserializer;
 import copy.com.google.gson.JsonSerializer;
 
-public interface Serializer<T> extends JsonSerializer<T>, JsonDeserializer<T>{
+public interface Serializer<T> extends JsonSerializer<T>, JsonDeserializer<T> {
 
 }

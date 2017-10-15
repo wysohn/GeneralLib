@@ -21,7 +21,9 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 public interface INmsWorldManager {
-	void regenerateChunk(World w, int i, int j, BlockFilter filter);
-	void sendChunkMapPacket(Player player, Chunk chunk);
-	void sendUnloadChunkPacket(Player player, int x, int z);
+    void regenerateChunk(World w, int i, int j, BlockFilter filter);
+
+    void sendChunkMapPacket(Player player, Chunk chunk);
+
+    void sendUnloadChunkPacket(Player player, int x, int z);
 }

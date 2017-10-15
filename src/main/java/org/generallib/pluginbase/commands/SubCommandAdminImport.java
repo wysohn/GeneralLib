@@ -29,31 +29,31 @@ import org.generallib.pluginbase.PluginLanguage.Language;
 import org.generallib.pluginbase.PluginManager;
 
 public class SubCommandAdminImport extends SubCommandAdmin {
-	public SubCommandAdminImport(PluginBase base, String permission) {
-		super(base, permission, DefaultLanguages.Command_Import_Description,
-				new Language[] { DefaultLanguages.Command_Import_Usage }, 1, "import");
-	}
+    public SubCommandAdminImport(PluginBase base, String permission) {
+        super(base, permission, DefaultLanguages.Command_Import_Description,
+                new Language[] { DefaultLanguages.Command_Import_Usage }, 1, "import");
+    }
 
-	@Override
-	protected boolean executeConsole(CommandSender sender, String[] args) {
-		String fromName = args[0];
-		
-		Set<TransferPair> pairs = new HashSet<TransferPair>();
-		
-		for(Entry<Class<? extends PluginManager>, PluginManager> entry : base.getPluginManagers().entrySet()){
-			Set<String> allowedTypes = entry.getValue().getValidDBTypes();
-			if(!allowedTypes.contains(fromName)){
-				base.getLogger().severe(entry.getKey().getSimpleName()+"@Invalid db type -- "+fromName);
-				return false;
-			}
-			
-			Set<TransferPair> pair = entry.getValue().getTransferPair(fromName);
-			if(pair != null)
-				pairs.addAll(pair);
-		}
-		
-		new Thread(new DatabaseTransferTask(base, pairs)).start();
-		
-		return true;
-	}
+    @Override
+    protected boolean executeConsole(CommandSender sender, String[] args) {
+        String fromName = args[0];
+
+        Set<TransferPair> pairs = new HashSet<TransferPair>();
+
+        for (Entry<Class<? extends PluginManager>, PluginManager> entry : base.getPluginManagers().entrySet()) {
+            Set<String> allowedTypes = entry.getValue().getValidDBTypes();
+            if (!allowedTypes.contains(fromName)) {
+                base.getLogger().severe(entry.getKey().getSimpleName() + "@Invalid db type -- " + fromName);
+                return false;
+            }
+
+            Set<TransferPair> pair = entry.getValue().getTransferPair(fromName);
+            if (pair != null)
+                pairs.addAll(pair);
+        }
+
+        new Thread(new DatabaseTransferTask(base, pairs)).start();
+
+        return true;
+    }
 }

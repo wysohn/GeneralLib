@@ -39,7 +39,7 @@ import org.generallib.pluginbase.constants.SimpleLocation;
 import org.generallib.pluginbase.manager.event.PlayerBlockLocationEvent;
 import org.generallib.pluginbase.manager.event.PlayerChunkLocationEvent;
 
-public class PlayerLocationManager<T extends PluginBase> extends PluginManager<T> implements Listener{
+public class PlayerLocationManager<T extends PluginBase> extends PluginManager<T> implements Listener {
     private transient Map<UUID, SimpleLocation> locations = new ConcurrentHashMap<>();
 
     public PlayerLocationManager(T base, int loadPriority) {
@@ -63,17 +63,22 @@ public class PlayerLocationManager<T extends PluginBase> extends PluginManager<T
 
     /**
      * get location of player
-     * @param uuid uuid of player
+     * 
+     * @param uuid
+     *            uuid of player
      * @return the location. If the player just logged in, it might be null.
      */
-    public SimpleLocation getCurrentBlockLocation(UUID uuid){
+    public SimpleLocation getCurrentBlockLocation(UUID uuid) {
         return locations.get(uuid);
     }
 
     /**
      * set current location of the player
-     * @param uuid the player's uuid
-     * @param sloc the location where player is at
+     * 
+     * @param uuid
+     *            the player's uuid
+     * @param sloc
+     *            the location where player is at
      */
     protected void setCurrentBlockLocation(UUID uuid, SimpleLocation sloc) {
         locations.put(uuid, sloc);
@@ -81,14 +86,16 @@ public class PlayerLocationManager<T extends PluginBase> extends PluginManager<T
 
     /**
      * remove the current location of the player.
-     * @param uuid the player's uuid
+     * 
+     * @param uuid
+     *            the player's uuid
      */
     protected void removeCurrentBlockLocation(UUID uuid) {
         locations.remove(uuid);
     }
 
     @EventHandler(priority = EventPriority.LOW)
-    public void onJoin(PlayerJoinEvent e){
+    public void onJoin(PlayerJoinEvent e) {
         Player player = e.getPlayer();
         Location loc = player.getLocation();
         SimpleLocation sloc = LocationUtil.convertToSimpleLocation(loc);
@@ -96,7 +103,7 @@ public class PlayerLocationManager<T extends PluginBase> extends PluginManager<T
     }
 
     @EventHandler
-    public void onSpawn(PlayerRespawnEvent e){
+    public void onSpawn(PlayerRespawnEvent e) {
         Player player = e.getPlayer();
         Location loc = player.getLocation();
         SimpleLocation sloc = LocationUtil.convertToSimpleLocation(loc);
@@ -104,7 +111,7 @@ public class PlayerLocationManager<T extends PluginBase> extends PluginManager<T
     }
 
     @EventHandler
-    public void onTeleport(PlayerChangedWorldEvent e){
+    public void onTeleport(PlayerChangedWorldEvent e) {
         Player player = e.getPlayer();
         Location loc = player.getLocation();
         SimpleLocation sloc = LocationUtil.convertToSimpleLocation(loc);
@@ -112,14 +119,14 @@ public class PlayerLocationManager<T extends PluginBase> extends PluginManager<T
     }
 
     @EventHandler(priority = EventPriority.HIGH)
-    public void onQuit(PlayerQuitEvent e){
+    public void onQuit(PlayerQuitEvent e) {
         Player player = e.getPlayer();
         removeCurrentBlockLocation(player.getUniqueId());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onMove(PlayerMoveEvent e){
-        if(e.getTo() == e.getFrom())
+    public void onMove(PlayerMoveEvent e) {
+        if (e.getTo() == e.getFrom())
             return;
 
         Player player = e.getPlayer();
@@ -127,26 +134,26 @@ public class PlayerLocationManager<T extends PluginBase> extends PluginManager<T
         SimpleLocation from = getCurrentBlockLocation(player.getUniqueId());
         SimpleLocation to = LocationUtil.convertToSimpleLocation(e.getTo());
 
-        if(from.equals(to))
+        if (from.equals(to))
             return;
 
         SimpleChunkLocation fromChunk = new SimpleChunkLocation(from);
         SimpleChunkLocation toChunk = new SimpleChunkLocation(to);
 
         boolean cancelled = false;
-        if(!fromChunk.equals(toChunk)){
+        if (!fromChunk.equals(toChunk)) {
             PlayerChunkLocationEvent pcle = new PlayerChunkLocationEvent(player, fromChunk, toChunk);
             Bukkit.getPluginManager().callEvent(pcle);
-            if(pcle.isCancelled())
+            if (pcle.isCancelled())
                 cancelled = true;
         }
 
         PlayerBlockLocationEvent pble = new PlayerBlockLocationEvent(player, from, to);
         Bukkit.getPluginManager().callEvent(pble);
-        if(pble.isCancelled())
+        if (pble.isCancelled())
             cancelled = true;
 
-        if(cancelled){
+        if (cancelled) {
             e.setCancelled(true);
 
             Location loc = LocationUtil.convertToBukkitLocation(from);

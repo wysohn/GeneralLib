@@ -29,16 +29,18 @@ import java.nio.channels.FileChannel;
 public class FileUtil {
     /**
      *
-     * @param file target file
-     * @param str string to save
+     * @param file
+     *            target file
+     * @param str
+     *            string to save
      * @throws IOException
      */
-    public static void writeToFile(File file, String str) throws IOException{
-        if(!file.getParentFile().exists()){
+    public static void writeToFile(File file, String str) throws IOException {
+        if (!file.getParentFile().exists()) {
             file.getParentFile().mkdirs();
         }
 
-        if(!file.exists()){
+        if (!file.exists()) {
             try {
                 file.createNewFile();
             } catch (IOException e) {
@@ -46,10 +48,10 @@ public class FileUtil {
             }
         }
 
-        File temp = File.createTempFile("CopyOf_"+file.getName(), ".tmp", file.getParentFile());
+        File temp = File.createTempFile("CopyOf_" + file.getName(), ".tmp", file.getParentFile());
 
-        try(FileOutputStream fos = new FileOutputStream(temp);
-                OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");){
+        try (FileOutputStream fos = new FileOutputStream(temp);
+                OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8");) {
             osw.write(str);
         }
 
@@ -63,26 +65,26 @@ public class FileUtil {
         temp.delete();
     }
 
-    public static String readFromFile(File file) throws UnsupportedEncodingException, IOException{
-        if(!file.exists())
+    public static String readFromFile(File file) throws UnsupportedEncodingException, IOException {
+        if (!file.exists())
             return null;
 
         StringBuilder builder = new StringBuilder();
-        try(FileInputStream fis = new FileInputStream(file);
-                InputStreamReader isr = new InputStreamReader(fis, "UTF-8")){
+        try (FileInputStream fis = new FileInputStream(file);
+                InputStreamReader isr = new InputStreamReader(fis, "UTF-8")) {
             int read = -1;
-            while((read = isr.read()) != -1){
+            while ((read = isr.read()) != -1) {
                 builder.append((char) read);
             }
             return builder.toString();
         }
     }
 
-    public static String readFromStream(InputStream stream) throws UnsupportedEncodingException, IOException{
+    public static String readFromStream(InputStream stream) throws UnsupportedEncodingException, IOException {
         StringBuilder builder = new StringBuilder();
-        try(InputStreamReader isr = new InputStreamReader(stream, "UTF-8")){
+        try (InputStreamReader isr = new InputStreamReader(stream, "UTF-8")) {
             int read = -1;
-            while((read = isr.read()) != -1){
+            while ((read = isr.read()) != -1) {
                 builder.append((char) read);
             }
             return builder.toString();
@@ -90,14 +92,17 @@ public class FileUtil {
     }
 
     /**
-     * same as file.delete() if 'file' is file; recursively deletes all elements inside if 'file' is directory.
-     * @param file folder or file
+     * same as file.delete() if 'file' is file; recursively deletes all elements
+     * inside if 'file' is directory.
+     * 
+     * @param file
+     *            folder or file
      */
-    public static void delete(File file){
-        if(file.isFile()){
+    public static void delete(File file) {
+        if (file.isFile()) {
             file.delete();
-        }else{
-            for(File f : file.listFiles()){
+        } else {
+            for (File f : file.listFiles()) {
                 delete(f);
             }
             file.delete();

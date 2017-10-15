@@ -17,7 +17,7 @@
 package org.generallib.deeplearning.neuralnetwork;
 
 public class InvalidLayerCountException extends NeuralNetworkInitializeException {
-	public InvalidLayerCountException(){
-		super("Neural Network must have at three layers.");
-	}
+    public InvalidLayerCountException() {
+        super("Neural Network must have at three layers.");
+    }
 }

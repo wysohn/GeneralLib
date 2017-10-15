@@ -25,14 +25,14 @@ package copy.com.google.gson.stream;
 final class JsonScope {
 
     /**
-     * An array with no elements requires no separators or newlines before
-     * it is closed.
+     * An array with no elements requires no separators or newlines before it is
+     * closed.
      */
     static final int EMPTY_ARRAY = 1;
 
     /**
-     * A array with at least one value requires a comma and newline before
-     * the next element.
+     * A array with at least one value requires a comma and newline before the
+     * next element.
      */
     static final int NONEMPTY_ARRAY = 2;
 
@@ -43,14 +43,14 @@ final class JsonScope {
     static final int EMPTY_OBJECT = 3;
 
     /**
-     * An object whose most recent element is a key. The next element must
-     * be a value.
+     * An object whose most recent element is a key. The next element must be a
+     * value.
      */
     static final int DANGLING_NAME = 4;
 
     /**
-     * An object with at least one name/value pair requires a comma and
-     * newline before the next element.
+     * An object with at least one name/value pair requires a comma and newline
+     * before the next element.
      */
     static final int NONEMPTY_OBJECT = 5;
 

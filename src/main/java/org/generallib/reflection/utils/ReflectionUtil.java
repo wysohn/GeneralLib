@@ -38,7 +38,8 @@ import java.util.zip.ZipFile;
 import org.apache.commons.lang3.ClassUtils;
 
 public class ReflectionUtil {
-    public static void setField(Object obj, String fieldName, Object value) throws NoSuchFieldException, IllegalArgumentException{
+    public static void setField(Object obj, String fieldName, Object value)
+            throws NoSuchFieldException, IllegalArgumentException {
         Class<?> clazz = obj.getClass();
 
         Field field = clazz.getDeclaredField(fieldName);
@@ -51,11 +52,12 @@ public class ReflectionUtil {
         }
     }
 
-    public static void setFinalField(Object obj, String fieldName, Object value) throws NoSuchFieldException{
+    public static void setFinalField(Object obj, String fieldName, Object value) throws NoSuchFieldException {
         setFinalField(obj.getClass(), obj, fieldName, value);
     }
 
-    public static void setFinalField(Class<?> clazz, Object obj, String fieldName, Object value) throws NoSuchFieldException{
+    public static void setFinalField(Class<?> clazz, Object obj, String fieldName, Object value)
+            throws NoSuchFieldException {
         Field field = clazz.getDeclaredField(fieldName);
 
         setFinalField(obj, field, value);
@@ -63,13 +65,14 @@ public class ReflectionUtil {
 
     /**
      * https://stackoverflow.com/questions/3301635/change-private-static-final-field-using-java-reflection
+     * 
      * @param field
      * @param newValue
      * @throws SecurityException
      * @throws NoSuchFieldException
      * @throws Exception
      */
-    private static void setFinalField(Object target, Field field, Object newValue) throws NoSuchFieldException{
+    private static void setFinalField(Object target, Field field, Object newValue) throws NoSuchFieldException {
         field.setAccessible(true);
 
         Field modifiersField = null;
@@ -93,7 +96,7 @@ public class ReflectionUtil {
         }
     }
 
-    public static Object getField(Object obj, String fieldName) throws NoSuchFieldException, IllegalArgumentException{
+    public static Object getField(Object obj, String fieldName) throws NoSuchFieldException, IllegalArgumentException {
         Class<?> clazz = obj.getClass();
 
         Field field = clazz.getDeclaredField(fieldName);
@@ -108,7 +111,8 @@ public class ReflectionUtil {
         return null;
     }
 
-    public static Object getField(Class<?> clazz, Object obj, String fieldName) throws NoSuchFieldException, IllegalArgumentException{
+    public static Object getField(Class<?> clazz, Object obj, String fieldName)
+            throws NoSuchFieldException, IllegalArgumentException {
         Field field = clazz.getDeclaredField(fieldName);
         field.setAccessible(true);
 
@@ -121,8 +125,9 @@ public class ReflectionUtil {
         return null;
     }
 
-    public static Object invokeMethod(Class<?> clazz, Object obj, String methodName, Object... args) throws NoSuchMethodException, IllegalArgumentException, InvocationTargetException{
-        try{
+    public static Object invokeMethod(Class<?> clazz, Object obj, String methodName, Object... args)
+            throws NoSuchMethodException, IllegalArgumentException, InvocationTargetException {
+        try {
             Class<?>[] parameterTypes = null;
             for (Method method : clazz.getDeclaredMethods()) {
                 if (!method.getName().equals(methodName)) {
@@ -159,7 +164,7 @@ public class ReflectionUtil {
                     }
 
                     Object[] newArgs = new Object[parameterTypes.length];
-                    for(int k = 0; k < newArgs.length - 1; k++){
+                    for (int k = 0; k < newArgs.length - 1; k++) {
                         newArgs[k] = args[k];
                     }
                     newArgs[newArgs.length - 1] = varargs;
@@ -188,44 +193,45 @@ public class ReflectionUtil {
                 StringBuilder builder = null;
                 String expected = null;
 
-                if(parameterTypes != null && parameterTypes.length > 1){
+                if (parameterTypes != null && parameterTypes.length > 1) {
                     builder = new StringBuilder(parameterTypes[0].getClass().getName());
                     for (int i = 1; i < parameterTypes.length; i++)
                         builder.append("," + parameterTypes[i].getClass().getSimpleName());
-                    expected = methodName+"("+builder.toString()+")";
+                    expected = methodName + "(" + builder.toString() + ")";
                 }
 
                 builder = new StringBuilder(args[0].getClass().getName());
                 for (int i = 1; i < args.length; i++)
                     builder.append("," + args[i].getClass().getSimpleName());
-                String actual = methodName+"("+builder.toString()+")";
+                String actual = methodName + "(" + builder.toString() + ")";
 
-                if(expected != null)
-                    throw new NoSuchMethodException("Expected -- "+expected+"    Actual -- "+actual);
+                if (expected != null)
+                    throw new NoSuchMethodException("Expected -- " + expected + "    Actual -- " + actual);
                 else
                     throw new NoSuchMethodException(actual);
-            }else{
-                throw new NoSuchMethodException(methodName+"()");
+            } else {
+                throw new NoSuchMethodException(methodName + "()");
             }
-        }catch(NullPointerException e){
+        } catch (NullPointerException e) {
             StringBuilder builder = new StringBuilder(String.valueOf(args[0]));
             for (int i = 1; i < args.length; i++)
                 builder.append("," + String.valueOf(args[i]));
-            throw new NullPointerException("Call "+methodName+"("+builder.toString()+")");
+            throw new NullPointerException("Call " + methodName + "(" + builder.toString() + ")");
         }
     }
 
-    public static Object invokeMethod(Object obj, String methodName, Object... args) throws NoSuchMethodException, IllegalArgumentException, InvocationTargetException{
+    public static Object invokeMethod(Object obj, String methodName, Object... args)
+            throws NoSuchMethodException, IllegalArgumentException, InvocationTargetException {
         Class<?> clazz = obj.getClass();
 
         return invokeMethod(clazz, obj, methodName, args);
     }
 
-    public static Map<String, Object> extractVariables(Object e){
+    public static Map<String, Object> extractVariables(Object e) {
         Map<String, Object> map = new HashMap<String, Object>();
 
         Class<?> clazz = e.getClass();
-        for(Field field : getAllFields(new ArrayList<Field>(), clazz)){
+        for (Field field : getAllFields(new ArrayList<Field>(), clazz)) {
             field.setAccessible(true);
             try {
                 map.put(field.getName(), field.get(e));
@@ -237,17 +243,17 @@ public class ReflectionUtil {
         return map;
     }
 
-    public static Map<String, Object> extractVariablesWithEnumAsString(Object e){
+    public static Map<String, Object> extractVariablesWithEnumAsString(Object e) {
         Map<String, Object> map = new HashMap<String, Object>();
 
         Class<?> clazz = e.getClass();
-        for(Field field : getAllFields(new ArrayList<Field>(), clazz)){
+        for (Field field : getAllFields(new ArrayList<Field>(), clazz)) {
             field.setAccessible(true);
             try {
-                if(field.getClass().isEnum()){
+                if (field.getClass().isEnum()) {
                     Enum enumVal = (Enum) field.get(e);
                     map.put(field.getName(), enumVal.name());
-                }else{
+                } else {
                     map.put(field.getName(), field.get(e));
                 }
             } catch (IllegalArgumentException | IllegalAccessException e1) {
@@ -260,34 +266,35 @@ public class ReflectionUtil {
 
     /**
      * http://stackoverflow.com/questions/1042798/retrieving-the-inherited-attribute-names-values-using-java-reflection
+     * 
      * @param fields
      * @param c
      * @return
      */
-    public static List<Field> getAllFields(List<Field> fields, Class<?> c){
+    public static List<Field> getAllFields(List<Field> fields, Class<?> c) {
         fields.addAll(Arrays.asList(c.getDeclaredFields()));
 
-        if(c.getSuperclass() != null){
+        if (c.getSuperclass() != null) {
             fields = getAllFields(fields, c.getSuperclass());
         }
 
         return fields;
     }
 
-    public static List<Field> getAllPublicFields(List<Field> fields, Class<?> c){
+    public static List<Field> getAllPublicFields(List<Field> fields, Class<?> c) {
         fields.addAll(Arrays.asList(c.getFields()));
 
-        if(c.getSuperclass() != null){
+        if (c.getSuperclass() != null) {
             fields = getAllPublicFields(fields, c.getSuperclass());
         }
 
         return fields;
     }
 
-    public static List<Method> getAllPublicMethods(List<Method> methods, Class<?> c){
+    public static List<Method> getAllPublicMethods(List<Method> methods, Class<?> c) {
         methods.addAll(Arrays.asList(c.getMethods()));
 
-        if(c.getSuperclass() != null){
+        if (c.getSuperclass() != null) {
             methods = getAllPublicMethods(methods, c.getSuperclass());
         }
 
@@ -295,16 +302,16 @@ public class ReflectionUtil {
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //https://stackoverflow.com/questions/520328/can-you-find-all-classes-in-a-package-using-reflection
+    // https://stackoverflow.com/questions/520328/can-you-find-all-classes-in-a-package-using-reflection
 
-    public static List<String> getAllClasses(ClassLoader cl, String packageName){
+    public static List<String> getAllClasses(ClassLoader cl, String packageName) {
         packageName = packageName.replace('.', '/');
 
         List<String> classes = new ArrayList<>();
 
         URL[] urls = ((URLClassLoader) cl).getURLs();
         for (URL url : urls) {
-            //System.out.println(url.getFile());
+            // System.out.println(url.getFile());
             File jar = new File(url.getFile());
 
             if (jar.isDirectory()) {
@@ -334,7 +341,7 @@ public class ReflectionUtil {
                     }
                     zip.close();
                 } catch (ZipException e) {
-                    //System.out.println("Not a ZIP: " + e.getMessage());
+                    // System.out.println("Not a ZIP: " + e.getMessage());
                 } catch (IOException e) {
                     System.err.println(e.getMessage());
                 }
@@ -345,7 +352,7 @@ public class ReflectionUtil {
     }
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public static void main(String[] ar){
-       System.out.println(ClassUtils.isAssignable(Integer.class, double.class, true));
+    public static void main(String[] ar) {
+        System.out.println(ClassUtils.isAssignable(Integer.class, double.class, true));
     }
 }

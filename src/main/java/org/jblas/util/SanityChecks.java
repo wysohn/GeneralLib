@@ -41,8 +41,8 @@ import org.jblas.NativeBlas;
 import org.jblas.DoubleMatrix;
 
 /**
- * Run a few sanity checks on the installation to see whether
- * everything runs as expected.
+ * Run a few sanity checks on the installation to see whether everything runs as
+ * expected.
  *
  * @author Mikio L. Braun
  */
@@ -60,7 +60,10 @@ public class SanityChecks {
         }
     }
 
-    /** Check whether vector addition works. This is pure Java code and should work. */
+    /**
+     * Check whether vector addition works. This is pure Java code and should
+     * work.
+     */
     public static void checkVectorAddition() {
         DoubleMatrix x = new DoubleMatrix(3, 1, 1.0, 2.0, 3.0);
         DoubleMatrix y = new DoubleMatrix(3, 1, 4.0, 5.0, 6.0);
@@ -72,33 +75,22 @@ public class SanityChecks {
     /** Check matrix multiplication. This is already ATLAS/BLAS code. */
     public static void checkMatrixMultiplication() {
 
-        DoubleMatrix A = new DoubleMatrix(new double[][]{
-                    {1.0, 2.0, 3.0},
-                    {4.0, 5.0, 6.0},
-                    {7.0, 8.0, 9.0}
-                });
-        DoubleMatrix E = new DoubleMatrix(new double[][]{
-                    {0.0, 0.0, 1.0},
-                    {0.0, 1.0, 0.0},
-                    {1.0, 0.0, 0.0}
-                });
-        DoubleMatrix B = new DoubleMatrix(new double[][]{
-                    {3.0, 2.0, 1.0},
-                    {6.0, 5.0, 4.0},
-                    {9.0, 8.0, 7.0}
-                });
+        DoubleMatrix A = new DoubleMatrix(new double[][] { { 1.0, 2.0, 3.0 }, { 4.0, 5.0, 6.0 }, { 7.0, 8.0, 9.0 } });
+        DoubleMatrix E = new DoubleMatrix(new double[][] { { 0.0, 0.0, 1.0 }, { 0.0, 1.0, 0.0 }, { 1.0, 0.0, 0.0 } });
+        DoubleMatrix B = new DoubleMatrix(new double[][] { { 3.0, 2.0, 1.0 }, { 6.0, 5.0, 4.0 }, { 9.0, 8.0, 7.0 } });
 
         check("checking matrix multiplication", A.mmul(E).equals(B));
     }
 
     /**
-     * Check whether error handling works. If it works, you should see an
-     * ok, otherwise, you might see the actual error message and then
-     * the program exits.
+     * Check whether error handling works. If it works, you should see an ok,
+     * otherwise, you might see the actual error message and then the program
+     * exits.
      */
     public static void checkXerbla() {
         double[] x = new double[9];
-        System.out.println("Check whether we're catching XERBLA errors. If you see something like \"** On entry to DGEMM  parameter number  4 had an illegal value\", it didn't work!");
+        System.out.println(
+                "Check whether we're catching XERBLA errors. If you see something like \"** On entry to DGEMM  parameter number  4 had an illegal value\", it didn't work!");
         try {
             NativeBlas.dgemm('N', 'N', 3, -1, 3, 1.0, x, 0, 3, x, 0, 3, 0.0, x, 0, 3);
         } catch (IllegalArgumentException e) {
@@ -113,11 +105,7 @@ public class SanityChecks {
      * LAPACK.
      */
     public static void checkEigenvalues() {
-        DoubleMatrix A = new DoubleMatrix(new double[][]{
-                    {3.0, 2.0, 0.0},
-                    {2.0, 3.0, 2.0},
-                    {0.0, 2.0, 3.0}
-                });
+        DoubleMatrix A = new DoubleMatrix(new double[][] { { 3.0, 2.0, 0.0 }, { 2.0, 3.0, 2.0 }, { 0.0, 2.0, 3.0 } });
 
         DoubleMatrix E = new DoubleMatrix(3, 1);
 
@@ -126,12 +114,8 @@ public class SanityChecks {
     }
 
     public static void checkSVD() {
-        double[][] data = new double[][]{
-            {1.0, 2.0, 3.0},
-            {4.0, 5.0, 6.0},
-            {7.0, 8.0, 9.0},
-            {-1.0, -2.0, -3.0}
-        };
+        double[][] data = new double[][] { { 1.0, 2.0, 3.0 }, { 4.0, 5.0, 6.0 }, { 7.0, 8.0, 9.0 },
+                { -1.0, -2.0, -3.0 } };
 
         DoubleMatrix A = new DoubleMatrix(data);
 
@@ -142,10 +126,12 @@ public class SanityChecks {
 
         System.out.println(org.jblas.Singular.SVDValues(A));
 
-        /*ComplexDoubleMatrix[] AZB = org.jblas.Singular.sparseSVD(new ComplexDoubleMatrix(data));
-        System.out.println(AZB[0].toString());
-        System.out.println(AZB[1].toString());
-        System.out.println(AZB[2].toString());*/
+        /*
+         * ComplexDoubleMatrix[] AZB = org.jblas.Singular.sparseSVD(new
+         * ComplexDoubleMatrix(data)); System.out.println(AZB[0].toString());
+         * System.out.println(AZB[1].toString());
+         * System.out.println(AZB[2].toString());
+         */
         check("checking existence of dgesvd...", true);
     }
 
@@ -159,9 +145,7 @@ public class SanityChecks {
     }
 
     public static void checkComplexReturnValues() {
-        double[] data = new double[] {
-            1.0, 2.0, 3.0, 4.0, 5.0, 6.0
-        };
+        double[] data = new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0 };
 
         ComplexDoubleMatrix A = new ComplexDoubleMatrix(data);
 

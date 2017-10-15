@@ -17,7 +17,7 @@
 package org.generallib.deeplearning.neuralnetwork;
 
 public class NeuralNetworkInitializeException extends Exception {
-	NeuralNetworkInitializeException(String msg){
-		super(msg);
-	}
+    NeuralNetworkInitializeException(String msg) {
+        super(msg);
+    }
 }

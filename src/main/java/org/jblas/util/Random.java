@@ -17,11 +17,8 @@
 package org.jblas.util;
 
 /**
- * Created by IntelliJ IDEA.
- * User: mikio
- * Date: 6/24/11
- * Time: 10:45 AM
- * To change this template use File | Settings | File Templates.
+ * Created by IntelliJ IDEA. User: mikio Date: 6/24/11 Time: 10:45 AM To change
+ * this template use File | Settings | File Templates.
  */
 
 public class Random {

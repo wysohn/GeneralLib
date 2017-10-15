@@ -43,16 +43,22 @@ package org.jblas;
 import org.jblas.exceptions.LapackException;
 
 /**
- * <p>Implementation of some Blas functions, mostly those which require linear runtime
- * in the number of matrix elements. Because of the copying overhead when passing
- * primitive arrays to native code, it doesn't make sense for these functions
- * to be implemented in native code. The Java code is about as fast.</p>
+ * <p>
+ * Implementation of some Blas functions, mostly those which require linear
+ * runtime in the number of matrix elements. Because of the copying overhead
+ * when passing primitive arrays to native code, it doesn't make sense for these
+ * functions to be implemented in native code. The Java code is about as fast.
+ * </p>
  * 
- * <p>The same conventions were used as in the native code, that is, for each array
- * you also pass an index pointing to the starting index.</p>
+ * <p>
+ * The same conventions were used as in the native code, that is, for each array
+ * you also pass an index pointing to the starting index.
+ * </p>
  * 
- * <p>These methods are mostly optimized for the case where the starting index is 0
- * and the increment is 1.</p>
+ * <p>
+ * These methods are mostly optimized for the case where the starting index is 0
+ * and the increment is 1.
+ * </p>
  */
 public class JavaBlas {
 
@@ -78,10 +84,12 @@ public class JavaBlas {
     /** Copy dx to dy. */
     public static void rcopy(int n, double[] dx, int dxIdx, int incx, double[] dy, int dyIdx, int incy) {
         if (dxIdx < 0 || dxIdx + (n - 1) * incx >= dx.length) {
-            throw new LapackException("Java.raxpy", "Parameters for x aren't valid! (n = " + n + ", dx.length = " + dx.length + ", dxIdx = " + dxIdx + ", incx = " + incx + ")");
+            throw new LapackException("Java.raxpy", "Parameters for x aren't valid! (n = " + n + ", dx.length = "
+                    + dx.length + ", dxIdx = " + dxIdx + ", incx = " + incx + ")");
         }
         if (dyIdx < 0 || dyIdx + (n - 1) * incy >= dy.length) {
-            throw new LapackException("Java.raxpy", "Parameters for y aren't valid! (n = " + n + ", dy.length = " + dy.length + ", dyIdx = " + dyIdx + ", incy = " + incy + ")");
+            throw new LapackException("Java.raxpy", "Parameters for y aren't valid! (n = " + n + ", dy.length = "
+                    + dy.length + ", dyIdx = " + dyIdx + ", incy = " + incy + ")");
         }
         if (incx == 1 && incy == 1) {
             System.arraycopy(dx, dxIdx, dy, dyIdx, n);
@@ -95,12 +103,14 @@ public class JavaBlas {
     /** Compute dy <- da * dx + dy. */
     public static void raxpy(int n, double da, double[] dx, int dxIdx, int incx, double[] dy, int dyIdx, int incy) {
         if (dxIdx < 0 || dxIdx + (n - 1) * incx >= dx.length) {
-            throw new LapackException("Java.raxpy", "Parameters for x aren't valid! (n = " + n + ", dx.length = " + dx.length + ", dxIdx = " + dxIdx + ", incx = " + incx + ")");
+            throw new LapackException("Java.raxpy", "Parameters for x aren't valid! (n = " + n + ", dx.length = "
+                    + dx.length + ", dxIdx = " + dxIdx + ", incx = " + incx + ")");
         }
         if (dyIdx < 0 || dyIdx + (n - 1) * incy >= dy.length) {
-            throw new LapackException("Java.raxpy", "Parameters for y aren't valid! (n = " + n + ", dy.length = " + dy.length + ", dyIdx = " + dyIdx + ", incy = " + incy + ")");
+            throw new LapackException("Java.raxpy", "Parameters for y aren't valid! (n = " + n + ", dy.length = "
+                    + dy.length + ", dyIdx = " + dyIdx + ", incy = " + incy + ")");
         }
-        
+
         if (incx == 1 && incy == 1 && dxIdx == 0 && dyIdx == 0) {
             if (da == 1.0) {
                 for (int i = 0; i < n; i++) {
@@ -126,14 +136,15 @@ public class JavaBlas {
     }
 
     /** Computes dz <- dx + dy */
-    public static void rzaxpy(int n, double[] dz, int dzIdx, int incz, double da, double[] dx, int dxIdx, int incx, double[] dy, int dyIdx, int incy) {
+    public static void rzaxpy(int n, double[] dz, int dzIdx, int incz, double da, double[] dx, int dxIdx, int incx,
+            double[] dy, int dyIdx, int incy) {
         if (dxIdx == 0 && incx == 1 && dyIdx == 0 && incy == 1 && dzIdx == 0 && incz == 1) {
             if (da == 1.0) {
                 for (int c = 0; c < n; c++)
                     dz[c] = dx[c] + dy[c];
             } else {
                 for (int c = 0; c < n; c++)
-                    dz[c] = da*dx[c] + dy[c];
+                    dz[c] = da * dx[c] + dy[c];
             }
         } else {
             if (da == 1.0) {
@@ -142,7 +153,7 @@ public class JavaBlas {
                 }
             } else {
                 for (int c = 0, xi = dxIdx, yi = dyIdx, zi = dzIdx; c < n; c++, xi += incx, yi += incy, zi += incz) {
-                    dz[zi] = da*dx[xi] + dy[yi];
+                    dz[zi] = da * dx[xi] + dy[yi];
                 }
             }
         }
@@ -150,7 +161,7 @@ public class JavaBlas {
 
     public static void rzgxpy(int n, double[] dz, double[] dx, double[] dy) {
         for (int c = 0; c < n; c++)
-            dz[c] = dx[c] + dy[c];       
+            dz[c] = dx[c] + dy[c];
     }
 
     /** Compute scalar product between dx and dy. */
@@ -159,17 +170,16 @@ public class JavaBlas {
         if (incx == 1 && incy == 1 && dxIdx == 0 && dyIdx == 0) {
             for (int i = 0; i < n; i++)
                 s += dx[i] * dy[i];
-        }
-        else {
+        } else {
             for (int c = 0, xi = dxIdx, yi = dyIdx; c < n; c++, xi += incx, yi += incy) {
                 s += dx[xi] * dy[yi];
             }
         }
         return s;
     }
-//BEGIN
-  // The code below has been automatically generated.
-  // DO NOT EDIT!
+    // BEGIN
+    // The code below has been automatically generated.
+    // DO NOT EDIT!
 
     /** Exchange two vectors. */
     public static void rswap(int n, float[] dx, int dxIdx, int incx, float[] dy, int dyIdx, int incy) {
@@ -193,10 +203,12 @@ public class JavaBlas {
     /** Copy dx to dy. */
     public static void rcopy(int n, float[] dx, int dxIdx, int incx, float[] dy, int dyIdx, int incy) {
         if (dxIdx < 0 || dxIdx + (n - 1) * incx >= dx.length) {
-            throw new LapackException("Java.raxpy", "Parameters for x aren't valid! (n = " + n + ", dx.length = " + dx.length + ", dxIdx = " + dxIdx + ", incx = " + incx + ")");
+            throw new LapackException("Java.raxpy", "Parameters for x aren't valid! (n = " + n + ", dx.length = "
+                    + dx.length + ", dxIdx = " + dxIdx + ", incx = " + incx + ")");
         }
         if (dyIdx < 0 || dyIdx + (n - 1) * incy >= dy.length) {
-            throw new LapackException("Java.raxpy", "Parameters for y aren't valid! (n = " + n + ", dy.length = " + dy.length + ", dyIdx = " + dyIdx + ", incy = " + incy + ")");
+            throw new LapackException("Java.raxpy", "Parameters for y aren't valid! (n = " + n + ", dy.length = "
+                    + dy.length + ", dyIdx = " + dyIdx + ", incy = " + incy + ")");
         }
         if (incx == 1 && incy == 1) {
             System.arraycopy(dx, dxIdx, dy, dyIdx, n);
@@ -210,12 +222,14 @@ public class JavaBlas {
     /** Compute dy <- da * dx + dy. */
     public static void raxpy(int n, float da, float[] dx, int dxIdx, int incx, float[] dy, int dyIdx, int incy) {
         if (dxIdx < 0 || dxIdx + (n - 1) * incx >= dx.length) {
-            throw new LapackException("Java.raxpy", "Parameters for x aren't valid! (n = " + n + ", dx.length = " + dx.length + ", dxIdx = " + dxIdx + ", incx = " + incx + ")");
+            throw new LapackException("Java.raxpy", "Parameters for x aren't valid! (n = " + n + ", dx.length = "
+                    + dx.length + ", dxIdx = " + dxIdx + ", incx = " + incx + ")");
         }
         if (dyIdx < 0 || dyIdx + (n - 1) * incy >= dy.length) {
-            throw new LapackException("Java.raxpy", "Parameters for y aren't valid! (n = " + n + ", dy.length = " + dy.length + ", dyIdx = " + dyIdx + ", incy = " + incy + ")");
+            throw new LapackException("Java.raxpy", "Parameters for y aren't valid! (n = " + n + ", dy.length = "
+                    + dy.length + ", dyIdx = " + dyIdx + ", incy = " + incy + ")");
         }
-        
+
         if (incx == 1 && incy == 1 && dxIdx == 0 && dyIdx == 0) {
             if (da == 1.0f) {
                 for (int i = 0; i < n; i++) {
@@ -241,14 +255,15 @@ public class JavaBlas {
     }
 
     /** Computes dz <- dx + dy */
-    public static void rzaxpy(int n, float[] dz, int dzIdx, int incz, float da, float[] dx, int dxIdx, int incx, float[] dy, int dyIdx, int incy) {
+    public static void rzaxpy(int n, float[] dz, int dzIdx, int incz, float da, float[] dx, int dxIdx, int incx,
+            float[] dy, int dyIdx, int incy) {
         if (dxIdx == 0 && incx == 1 && dyIdx == 0 && incy == 1 && dzIdx == 0 && incz == 1) {
             if (da == 1.0f) {
                 for (int c = 0; c < n; c++)
                     dz[c] = dx[c] + dy[c];
             } else {
                 for (int c = 0; c < n; c++)
-                    dz[c] = da*dx[c] + dy[c];
+                    dz[c] = da * dx[c] + dy[c];
             }
         } else {
             if (da == 1.0f) {
@@ -257,7 +272,7 @@ public class JavaBlas {
                 }
             } else {
                 for (int c = 0, xi = dxIdx, yi = dyIdx, zi = dzIdx; c < n; c++, xi += incx, yi += incy, zi += incz) {
-                    dz[zi] = da*dx[xi] + dy[yi];
+                    dz[zi] = da * dx[xi] + dy[yi];
                 }
             }
         }
@@ -265,7 +280,7 @@ public class JavaBlas {
 
     public static void rzgxpy(int n, float[] dz, float[] dx, float[] dy) {
         for (int c = 0; c < n; c++)
-            dz[c] = dx[c] + dy[c];       
+            dz[c] = dx[c] + dy[c];
     }
 
     /** Compute scalar product between dx and dy. */
@@ -274,13 +289,12 @@ public class JavaBlas {
         if (incx == 1 && incy == 1 && dxIdx == 0 && dyIdx == 0) {
             for (int i = 0; i < n; i++)
                 s += dx[i] * dy[i];
-        }
-        else {
+        } else {
             for (int c = 0, xi = dxIdx, yi = dyIdx; c < n; c++, xi += incx, yi += incy) {
                 s += dx[xi] * dy[yi];
             }
         }
         return s;
     }
-//END
+    // END
 }

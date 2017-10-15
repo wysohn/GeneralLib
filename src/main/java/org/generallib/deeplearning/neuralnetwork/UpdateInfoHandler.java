@@ -17,5 +17,5 @@
 package org.generallib.deeplearning.neuralnetwork;
 
 public interface UpdateInfoHandler {
-	void onUpdate(double cost);
+    void onUpdate(double cost);
 }

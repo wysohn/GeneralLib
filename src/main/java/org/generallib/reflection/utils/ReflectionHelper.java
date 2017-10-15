@@ -25,8 +25,7 @@ public class ReflectionHelper {
             Field field = c.getDeclaredField(fieldName);
             field.setAccessible(true);
             return field.get(object);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -41,9 +40,8 @@ public class ReflectionHelper {
             Field field = c.getDeclaredField(fieldName);
             field.setAccessible(true);
             field.set(object, value);
-        }
-        catch (Exception e) {
-           	e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -61,8 +59,7 @@ public class ReflectionHelper {
             modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
 
             field.set(object, value);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

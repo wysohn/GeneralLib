@@ -20,7 +20,6 @@ package org.generallib.skulls.utils;
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-
 import java.util.HashMap;
 
 /**
@@ -40,24 +39,27 @@ public enum CustomSkullType {
     IRON_GOLEM("MHF_Golem", "zippie007"), // Thanks Marc Watson
     MUSHROOM_COW("MHF_MushroomCow", "Mooshroom_Stew"), // Thanks Marc Watson
     BAT("bozzobrain", "coolwhip101"), // Thanks incraftion.com
-    PIG_ZOMBIE("MHF_PigZombie", "ManBearPigZombie", "scraftbrothers5"), // Thanks Marc Watson
+    PIG_ZOMBIE("MHF_PigZombie", "ManBearPigZombie", "scraftbrothers5"), // Thanks
+                                                                        // Marc
+                                                                        // Watson
     SNOWMAN("Koebasti", "scraftbrothers2"), // Thanks MrLeikermoser
     GHAST("MHF_Ghast", "_QuBra_", "blaiden"), // Thanks Marc Watson
     PIG("MHF_Pig", "XlexerX", "scrafbrothers7"), // Thanks Marc Watson
-    VILLAGER("MHF_Villager", "Kuvase", "Villager", "scraftbrothers9"), // Thanks Marc Watson
+    VILLAGER("MHF_Villager", "Kuvase", "Villager", "scraftbrothers9"), // Thanks
+                                                                       // Marc
+                                                                       // Watson
     SHEEP("MHF_Sheep", "SGT_KICYORASS", "Eagle_Peak"), // Thanks Marc Watson
     COW("MHF_Cow", "VerifiedBernard", "CarlosTheCow"), // Thanks Marc Watson
     CHICKEN("MHF_Chicken", "scraftbrothers1"), // Thanks Marc Watson
     OCELOT("MHF_Ocelot", "scraftbrothers3"), // Thanks Marc Watson
     WITCH("scrafbrothers4"), // Thanks SuperCraftBrothers.com
     MAGMA_CUBE("MHF_LavaSlime"), // Thanks Marc Watson
-    WOLF("Pablo_Penguin", "Budwolf"), // I still need an official wolf head if anyone wants to provide one
+    WOLF("Pablo_Penguin", "Budwolf"), // I still need an official wolf head if
+                                      // anyone wants to provide one
     CAVE_SPIDER("MHF_CaveSpider"), // Thanks Marc Watson
     RABBIT("rabbit2077"), // Thanks IrParadox
     GUARDIAN("Guardian", "creepypig7", "Creepypig7"), // Thanks lee3kfc
-	CREEPER("MHF_Creeper"),
-	SKELETON("MHF_Skeleton"),
-	ZOMBIE("MHF_Zombie");
+    CREEPER("MHF_Creeper"), SKELETON("MHF_Skeleton"), ZOMBIE("MHF_Zombie");
 
     private final String owner;
 
@@ -72,9 +74,9 @@ public enum CustomSkullType {
 
     CustomSkullType(String owner, String... toConvert) {
         this(owner);
-/*        for (String key : toConvert) {
-            Holder.map.put(key, this);
-        }*/
+        /*
+         * for (String key : toConvert) { Holder.map.put(key, this); }
+         */
     }
 
     public String getOwner() {

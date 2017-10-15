@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-public abstract class ClaimInfoAdapter implements ClaimInfo{
+public abstract class ClaimInfoAdapter implements ClaimInfo {
     private transient Area area;
 
     private final String name;
@@ -16,7 +16,9 @@ public abstract class ClaimInfoAdapter implements ClaimInfo{
         this.name = name;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.generallib.pluginbase.constants.ClaimInfo#getName()
      */
     @Override
@@ -24,15 +26,21 @@ public abstract class ClaimInfoAdapter implements ClaimInfo{
         return name;
     }
 
-    /* (non-Javadoc)
-     * @see org.generallib.pluginbase.constants.ClaimInfo#setArea(org.generallib.pluginbase.constants.Area)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.generallib.pluginbase.constants.ClaimInfo#setArea(org.generallib.
+     * pluginbase.constants.Area)
      */
     @Override
     public void setArea(Area area) {
         this.area = area;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.generallib.pluginbase.constants.ClaimInfo#getArea()
      */
     @Override
@@ -40,7 +48,9 @@ public abstract class ClaimInfoAdapter implements ClaimInfo{
         return area;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.generallib.pluginbase.constants.ClaimInfo#isPublic()
      */
     @Override
@@ -48,7 +58,9 @@ public abstract class ClaimInfoAdapter implements ClaimInfo{
         return false;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.generallib.pluginbase.constants.ClaimInfo#getOwner()
      */
     @Override
@@ -56,15 +68,20 @@ public abstract class ClaimInfoAdapter implements ClaimInfo{
         return owner;
     }
 
-    /* (non-Javadoc)
-     * @see org.generallib.pluginbase.constants.ClaimInfo#setOwner(java.util.UUID)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.generallib.pluginbase.constants.ClaimInfo#setOwner(java.util.UUID)
      */
     @Override
     public void setOwner(UUID uuid) {
         this.owner = uuid;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.generallib.pluginbase.constants.ClaimInfo#getTrusts()
      */
     @Override

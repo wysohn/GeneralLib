@@ -46,9 +46,7 @@ public class Logger {
     public static final int CONFIG = 2;
     public static final int DEBUG = 1;
 
-    public static final String levelNames[] = {
-        "DEBUG", "CONFIG", "INFO", "WARNING", "ERROR"
-    };
+    public static final String levelNames[] = { "DEBUG", "CONFIG", "INFO", "WARNING", "ERROR" };
 
     private static Logger theLogger = new Logger();
     private int level;
@@ -63,7 +61,7 @@ public class Logger {
 
     public void log(int messageLevel, String msg) {
         if (level <= messageLevel) {
-            System.err.println("-- org.jblas " + levelNames[messageLevel - 1] + " "+ msg);
+            System.err.println("-- org.jblas " + levelNames[messageLevel - 1] + " " + msg);
         }
     }
 

@@ -29,30 +29,30 @@ import copy.com.google.gson.JsonObject;
 import copy.com.google.gson.JsonParseException;
 import copy.com.google.gson.JsonSerializationContext;
 
-public class ItemStackSerializer implements Serializer<ItemStack>{
+public class ItemStackSerializer implements Serializer<ItemStack> {
 
-	@Override
-	public JsonElement serialize(ItemStack arg0, Type arg1, JsonSerializationContext arg2) {
-		JsonObject obj = new JsonObject();
-		FileConfiguration fc = new Utf8YamlConfiguration();
-		fc.set("ItemStack", arg0);
-		obj.addProperty("IS", fc.saveToString());
+    @Override
+    public JsonElement serialize(ItemStack arg0, Type arg1, JsonSerializationContext arg2) {
+        JsonObject obj = new JsonObject();
+        FileConfiguration fc = new Utf8YamlConfiguration();
+        fc.set("ItemStack", arg0);
+        obj.addProperty("IS", fc.saveToString());
 
-		return obj;
-	}
+        return obj;
+    }
 
-	@Override
-	public ItemStack deserialize(JsonElement arg0, Type arg1, JsonDeserializationContext arg2)
-			throws JsonParseException {
-		JsonObject obj = (JsonObject) arg0;
-		FileConfiguration fc = new Utf8YamlConfiguration();
-		try {
-			fc.loadFromString(obj.get("IS").getAsString());
-			return fc.getItemStack("ItemStack");
-		} catch (InvalidConfigurationException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
+    @Override
+    public ItemStack deserialize(JsonElement arg0, Type arg1, JsonDeserializationContext arg2)
+            throws JsonParseException {
+        JsonObject obj = (JsonObject) arg0;
+        FileConfiguration fc = new Utf8YamlConfiguration();
+        try {
+            fc.loadFromString(obj.get("IS").getAsString());
+            return fc.getItemStack("ItemStack");
+        } catch (InvalidConfigurationException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
 }

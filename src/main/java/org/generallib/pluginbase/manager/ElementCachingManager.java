@@ -21,12 +21,13 @@ import org.generallib.pluginbase.PluginManager;
 
 import com.google.common.collect.Sets;
 
-public abstract class ElementCachingManager<K, V extends ElementCachingManager.NamedElement> extends PluginManager<PluginBase> {
+public abstract class ElementCachingManager<K, V extends ElementCachingManager.NamedElement>
+        extends PluginManager<PluginBase> {
     /*
      * Lock ordering should be cachedElements -> db if it has to be nested.
      */
 
-    private final ExecutorService saveTaskPool = Executors.newSingleThreadExecutor(new ThreadFactory(){
+    private final ExecutorService saveTaskPool = Executors.newSingleThreadExecutor(new ThreadFactory() {
         @Override
         public Thread newThread(Runnable r) {
             Thread thread = new Thread(r);
@@ -65,7 +66,7 @@ public abstract class ElementCachingManager<K, V extends ElementCachingManager.N
             }
         } catch (Exception e) {
             base.getLogger().warning(e.getMessage());
-            base.getLogger().warning("Failed to initialize Mysql. file database. -- "+getClass().getSimpleName());
+            base.getLogger().warning("Failed to initialize Mysql. file database. -- " + getClass().getSimpleName());
         } finally {
             if (db == null) {
                 db = createFileDB();
@@ -80,23 +81,20 @@ public abstract class ElementCachingManager<K, V extends ElementCachingManager.N
 
     @Override
     protected void onReload() throws Exception {
-        synchronized(cachedElements) {
+        synchronized (cachedElements) {
             cachedElements.clear();
         }
         updateCache();
     }
 
-    public DatabaseFile<V> createFileDB(){
+    public DatabaseFile<V> createFileDB() {
         return new DatabaseFile<V>(new File(base.getDataFolder(), getTableName()), getType());
     }
 
-    public DatabaseMysql<V> createMysqlDB() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException{
-        return new DatabaseMysql<V>(
-                base.getPluginConfig().MySql_DBAddress,
-                base.getPluginConfig().MySql_DBName,
-                getTableName(),
-                base.getPluginConfig().MySql_DBUser,
-                base.getPluginConfig().MySql_DBPassword,
+    public DatabaseMysql<V> createMysqlDB()
+            throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+        return new DatabaseMysql<V>(base.getPluginConfig().MySql_DBAddress, base.getPluginConfig().MySql_DBName,
+                getTableName(), base.getPluginConfig().MySql_DBUser, base.getPluginConfig().MySql_DBPassword,
                 getType());
     }
 
@@ -114,28 +112,32 @@ public abstract class ElementCachingManager<K, V extends ElementCachingManager.N
 
     /**
      * Generate key from the given String.
-     * @param str the deserializable String value.
+     * 
+     * @param str
+     *            the deserializable String value.
      * @return deserialized object.
      */
     protected abstract K createKeyFromString(String str);
 
     /**
      * Get update handle to be used caching the data.
+     * 
      * @return
      */
     protected abstract CacheUpdateHandle<K, V> getUpdateHandle();
 
     /**
      * Get delete handle to be used removing data from cache.
+     * 
      * @return
      */
     protected abstract CacheDeleteHandle<K> getDeleteHandle();
 
-    public TransferPair<V> getTransferPair(Database<V> from){
+    public TransferPair<V> getTransferPair(Database<V> from) {
         return new TransferPair<V>(from, db);
     }
 
-    protected void updateCache(){
+    protected void updateCache() {
         Set<String> strKeys = db.getKeys();
 
         Set<K> keys = new HashSet<>();
@@ -168,15 +170,15 @@ public abstract class ElementCachingManager<K, V extends ElementCachingManager.N
             }
         }
 
-        for(K key : keys){
+        for (K key : keys) {
             updateCache(key);
         }
     }
 
-    protected void updateCache(K key){
+    protected void updateCache(K key) {
         V newVal;
 
-        synchronized(db){
+        synchronized (db) {
             newVal = db.load(key.toString(), null);
         }
 
@@ -188,30 +190,28 @@ public abstract class ElementCachingManager<K, V extends ElementCachingManager.N
     }
 
     private void cache(K key, V newVal, CacheUpdateHandle<K, V> updateHndle, CacheDeleteHandle<K> deleteHandle) {
-        synchronized(cachedElements){
-            if(newVal == null){
-                if(deleteHandle != null){
+        synchronized (cachedElements) {
+            if (newVal == null) {
+                if (deleteHandle != null) {
                     deleteHandle.onDelete(key);
                 }
 
                 V original = cachedElements.remove(key);
                 if (original != null && original.getName() != null)
                     nameMap.remove(original.getName());
-            }else{
-                if(updateHndle != null){
+            } else {
+                if (updateHndle != null) {
                     V out = updateHndle.onUpdate(key, newVal);
-                    if(out != null)
+                    if (out != null)
                         newVal = out;
                 }
 
                 V original = cachedElements.put(key, newVal);
 
-                if(newVal.getName() != null)
+                if (newVal.getName() != null)
                     nameMap.put(newVal.getName(), key);
 
-                if(original != null
-                        && original.getName() != null
-                        && !original.getName().equals(newVal.getName()))
+                if (original != null && original.getName() != null && !original.getName().equals(newVal.getName()))
                     nameMap.remove(original.getName());
             }
         }
@@ -228,10 +228,12 @@ public abstract class ElementCachingManager<K, V extends ElementCachingManager.N
     /**
      *
      * @param key
-     * @param lock whether to wait for previous database operations or just use cache right away
+     * @param lock
+     *            whether to wait for previous database operations or just use
+     *            cache right away
      * @return
      */
-    protected V get(K key, boolean lock){
+    protected V get(K key, boolean lock) {
         synchronized (cachedElements) {
             if (lock) {
                 synchronized (db) {
@@ -246,22 +248,24 @@ public abstract class ElementCachingManager<K, V extends ElementCachingManager.N
     /**
      *
      * @param name
-     * @param lock whether to wait for previous database operations or just use cache right away
+     * @param lock
+     *            whether to wait for previous database operations or just use
+     *            cache right away
      * @return
      */
-    protected V get(String name, boolean lock){
-        synchronized(cachedElements) {
-            if(lock){
-                synchronized(db){
+    protected V get(String name, boolean lock) {
+        synchronized (cachedElements) {
+            if (lock) {
+                synchronized (db) {
                     K key = nameMap.get(name);
-                    if(key == null)
+                    if (key == null)
                         return null;
                     else
                         return cachedElements.get(key);
                 }
-            }else{
+            } else {
                 K key = nameMap.get(name);
-                if(key == null)
+                if (key == null)
                     return null;
                 else
                     return cachedElements.get(key);
@@ -269,38 +273,40 @@ public abstract class ElementCachingManager<K, V extends ElementCachingManager.N
         }
     }
 
-    protected Set<K> getAllKeys(){
-        synchronized(cachedElements){
+    protected Set<K> getAllKeys() {
+        synchronized (cachedElements) {
             return Sets.newHashSet(cachedElements.keySet());
         }
     }
 
     /**
      * Lock thread until previous database works are done
+     * 
      * @param key
      */
-    public void check(){
-        synchronized(db) {}
+    public void check() {
+        synchronized (db) {
+        }
     }
 
-    protected void save(K key, V value){
+    protected void save(K key, V value) {
         save(key, value, null);
     }
 
-    protected void save(final K key, final V value, final SaveHandle handle){
+    protected void save(final K key, final V value, final SaveHandle handle) {
         dbWriting = true;
 
-        if(handle != null){
-            try{
+        if (handle != null) {
+            try {
                 handle.preSave();
-            }catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
         cache(key, value);
 
-        saveTaskPool.submit(new Runnable(){
+        saveTaskPool.submit(new Runnable() {
             @Override
             public void run() {
                 synchronized (db) {
@@ -320,7 +326,7 @@ public abstract class ElementCachingManager<K, V extends ElementCachingManager.N
         });
     }
 
-    protected void delete(final K key){
+    protected void delete(final K key) {
         dbWriting = true;
 
         synchronized (cachedElements) {
@@ -345,7 +351,7 @@ public abstract class ElementCachingManager<K, V extends ElementCachingManager.N
         });
     }
 
-    protected void deleteNameKey(String key){
+    protected void deleteNameKey(String key) {
         nameMap.remove(key);
     }
 
@@ -353,7 +359,7 @@ public abstract class ElementCachingManager<K, V extends ElementCachingManager.N
         return nameMap.get(name);
     }
 
-    private class CacheUpdateThread extends Thread{
+    private class CacheUpdateThread extends Thread {
         CacheUpdateThread() {
             this.setPriority(MIN_PRIORITY);
             this.setName("CacheUpdateThread");
@@ -362,10 +368,10 @@ public abstract class ElementCachingManager<K, V extends ElementCachingManager.N
         @Override
         public void run() {
             while (!Thread.interrupted() && base.isEnabled()) {
-                try{
-                    if(!dbWriting)
+                try {
+                    if (!dbWriting)
                         updateCache();
-                }catch(Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                     base.getLogger().severe("CacheUpdateThread had to be stopped!");
                     base.getLogger().severe("Data will be out of sync if you have another server using the plugin!");
@@ -381,23 +387,25 @@ public abstract class ElementCachingManager<K, V extends ElementCachingManager.N
         }
     }
 
-    public interface NamedElement{
+    public interface NamedElement {
         String getName();
     }
 
-    public interface SaveHandle{
+    public interface SaveHandle {
         /**
-         * This method will be invoked before saving the value. It's not asynchronous.
+         * This method will be invoked before saving the value. It's not
+         * asynchronous.
          */
         void preSave();
 
         /**
-         * This method will be invoked after saving the value. It's asynchronous.
+         * This method will be invoked after saving the value. It's
+         * asynchronous.
          */
         void postSave();
     }
 
-    public interface CacheUpdateHandle<K, T extends NamedElement>{
+    public interface CacheUpdateHandle<K, T extends NamedElement> {
         /**
          * This method will be invoked every-time when a new information read
          * from database will be cached. This is good place to initialize
@@ -406,13 +414,15 @@ public abstract class ElementCachingManager<K, V extends ElementCachingManager.N
          * @param key
          *            key used when load value from database
          * @param original
-         *            original value. This can be null if the data was deleted from the database.
-         * @return changed value. Return null will preserve the 'original' to be used as cache.
+         *            original value. This can be null if the data was deleted
+         *            from the database.
+         * @return changed value. Return null will preserve the 'original' to be
+         *         used as cache.
          */
         T onUpdate(K key, T original);
     }
 
-    public interface CacheDeleteHandle<K>{
+    public interface CacheDeleteHandle<K> {
         void onDelete(K key);
     }
 }

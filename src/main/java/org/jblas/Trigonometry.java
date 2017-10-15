@@ -61,7 +61,6 @@ package org.jblas;
  * @author Johannes Schaback, last edited by $Author$, $Date$
  * @version $Revision$
  */
-public class Trigonometry
-{
- // yet to be filled
+public class Trigonometry {
+    // yet to be filled
 }

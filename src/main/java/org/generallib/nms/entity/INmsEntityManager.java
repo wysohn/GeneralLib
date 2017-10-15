@@ -28,11 +28,17 @@ import org.bukkit.inventory.ItemStack;
 import net.minecraft.server.v1_11_R1.ScoreboardTeamBase;
 
 public interface INmsEntityManager {
-	String getLocale(Player player);
-	Player createFakePlayer(final UUID uuid);
-	void changeOfflinePlayerName(UUID uuid, String name);
-	void destroyEntity(Player[] player, int[] entityID);
-	void sendTeamColor(Player player[], String teamName, String prefix, Set<String> playersUUID, int mode);
-	void swingRightArm(Player[] player);
-	float getYaw(Entity entity);
+    String getLocale(Player player);
+
+    Player createFakePlayer(final UUID uuid);
+
+    void changeOfflinePlayerName(UUID uuid, String name);
+
+    void destroyEntity(Player[] player, int[] entityID);
+
+    void sendTeamColor(Player player[], String teamName, String prefix, Set<String> playersUUID, int mode);
+
+    void swingRightArm(Player[] player);
+
+    float getYaw(Entity entity);
 }

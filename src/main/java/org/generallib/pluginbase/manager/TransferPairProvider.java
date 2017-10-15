@@ -20,7 +20,8 @@ import java.util.Set;
 
 import org.generallib.database.tasks.DatabaseTransferTask.TransferPair;
 
-public interface TransferPairProvider{
-	public Set<String> getValidDBTypes();
-	Set<TransferPair> getTransferPair(String dbTypeFrom);
+public interface TransferPairProvider {
+    public Set<String> getValidDBTypes();
+
+    Set<TransferPair> getTransferPair(String dbTypeFrom);
 }

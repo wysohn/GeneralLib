@@ -26,59 +26,59 @@ import org.generallib.pluginbase.constants.SimpleChunkLocation;
 import org.generallib.pluginbase.constants.SimpleLocation;
 
 public class LocationUtil {
-/*	public static void main(String[] ar){
-		while(true){
-			Scanner sc = new Scanner(System.in);
-			double x = Double.parseDouble(sc.nextLine());
-			double y = Double.parseDouble(sc.nextLine());
+    /*
+     * public static void main(String[] ar){ while(true){ Scanner sc = new
+     * Scanner(System.in); double x = Double.parseDouble(sc.nextLine()); double
+     * y = Double.parseDouble(sc.nextLine());
+     * 
+     * double val = Math.atan2(y, x); val = val < 0 ? 2*Math.PI + val : val;
+     * 
+     * System.out.println("result: "+val); } }
+     */
 
-			double val = Math.atan2(y, x);
-			val = val < 0 ? 2*Math.PI + val : val;
+    // - : theta - yaw
+    // + : theta - yaw - 2PI
+    public static boolean isAttackFromBack(Entity target, Entity behind) {
+        Location center = target.getLocation().clone();
+        Location source = behind.getLocation().clone();
 
-			System.out.println("result: "+val);
-		}
-	}*/
+        float yaw = FakePlugin.nmsEntityManager.getYaw(target);
+        yaw = (float) Math.toRadians(yaw);
+        while (yaw > 2 * Math.PI)
+            yaw -= 2 * Math.PI;
+        while (yaw < 0)
+            yaw += 2 * Math.PI;
 
-	//- : theta - yaw
-	//+ : theta - yaw - 2PI
-	public static boolean isAttackFromBack(Entity target, Entity behind){
-		Location center = target.getLocation().clone();
-		Location source = behind.getLocation().clone();
+        Location relativeCoord = source.subtract(center);
+        double x = relativeCoord.getX();
+        double z = relativeCoord.getZ();
 
-		float yaw = FakePlugin.nmsEntityManager.getYaw(target);
-		yaw = (float) Math.toRadians(yaw);
-		while(yaw > 2*Math.PI) yaw -= 2*Math.PI;
-		while(yaw < 0) yaw += 2*Math.PI;
+        if (x == 0.0 && z == 0.0)
+            return false;
 
-		Location relativeCoord = source.subtract(center);
-		double x = relativeCoord.getX();
-		double z = relativeCoord.getZ();
+        double theta = Math.atan2(x, z);
+        theta = theta < 0 ? 2 * Math.PI + theta : theta;
 
-		if(x == 0.0 && z == 0.0)
-			return false;
+        double finalVal = 2 * Math.PI - theta - yaw;
+        finalVal = finalVal < 0 ? -finalVal : finalVal;
 
-		double theta = Math.atan2(x, z);
-		theta = theta < 0 ? 2*Math.PI + theta : theta;
+        double eyeAngle = Math.PI / 2 + Math.PI / 6;
 
-		double finalVal = 2*Math.PI- theta - yaw;
-		finalVal = finalVal < 0 ? -finalVal : finalVal;
-
-		double eyeAngle = Math.PI/2 + Math.PI/6;
-
-		return finalVal > eyeAngle && finalVal < 2*Math.PI - eyeAngle;
-	}
+        return finalVal > eyeAngle && finalVal < 2 * Math.PI - eyeAngle;
+    }
 
     public static SimpleChunkLocation convertToSimpleChunkLocation(Chunk chunk) {
         return new SimpleChunkLocation(chunk.getWorld().getName(), chunk.getX(), chunk.getZ());
     }
 
     public static SimpleLocation convertToSimpleLocation(Location loc) {
-        return new SimpleLocation(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), loc.getYaw(), loc.getPitch());
+        return new SimpleLocation(loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(),
+                loc.getYaw(), loc.getPitch());
     }
 
     public static Location convertToBukkitLocation(SimpleLocation from) {
         World world = Bukkit.getWorld(from.getWorld());
-        if(world == null)
+        if (world == null)
             return null;
 
         return new Location(world, from.getX(), from.getY(), from.getZ());

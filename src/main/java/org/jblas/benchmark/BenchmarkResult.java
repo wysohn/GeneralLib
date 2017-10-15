@@ -51,9 +51,7 @@ class BenchmarkResult {
     }
 
     void printResult() {
-        System.out.printf("%6.3f GFLOPS (%d iterations in %.1f seconds)%n",
-                numOps / duration / 1e9,
-                iterations,
+        System.out.printf("%6.3f GFLOPS (%d iterations in %.1f seconds)%n", numOps / duration / 1e9, iterations,
                 duration);
     }
 }

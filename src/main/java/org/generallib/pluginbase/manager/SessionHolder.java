@@ -24,7 +24,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-public interface SessionHolder<T extends PlayerSession> extends Listener{
-	public T getSession(Player player);
-	public T getSession(UUID uuid);
+public interface SessionHolder<T extends PlayerSession> extends Listener {
+    public T getSession(Player player);
+
+    public T getSession(UUID uuid);
 }

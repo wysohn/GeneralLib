@@ -41,33 +41,29 @@ import org.jblas.util.Logger;
 /**
  * A simple command-line style benchmarking program.
  * 
- * <p>Benchmarks matrix-matrix multiplication, and compares to a 
- * pure Java implementation</p>
+ * <p>
+ * Benchmarks matrix-matrix multiplication, and compares to a pure Java
+ * implementation
+ * </p>
  *
  * @author Mikio L. Braun
  */
 public class Main {
 
-    static Benchmark[] multiplicationBenchmarks = {
-        new JavaDoubleMultiplicationBenchmark(),
-        new JavaFloatMultiplicationBenchmark(),
-        new NativeDoubleMultiplicationBenchmark(),
-        new NativeFloatMultiplicationBenchmark(),};
+    static Benchmark[] multiplicationBenchmarks = { new JavaDoubleMultiplicationBenchmark(),
+            new JavaFloatMultiplicationBenchmark(), new NativeDoubleMultiplicationBenchmark(),
+            new NativeFloatMultiplicationBenchmark(), };
 
     public static void printHelp() {
-        System.out.printf("Usage: benchmark [opts]%n"
-                + "%n"
-                + "with options:%n"
-                + "%n"
+        System.out.printf("Usage: benchmark [opts]%n" + "%n" + "with options:%n" + "%n"
                 + "  --arch-flavor=value     overriding arch flavor (e.g. --arch-flavor=sse2)%n"
-                + "  --skip-java             don't run java benchmarks%n"
-                + "  --help                  show this help%n"
-                + "  --debug                 set config levels to debug%n"
-                + "%njblas version " + org.jblas.Info.VERSION + "%n");
+                + "  --skip-java             don't run java benchmarks%n" + "  --help                  show this help%n"
+                + "  --debug                 set config levels to debug%n" + "%njblas version " + org.jblas.Info.VERSION
+                + "%n");
     }
 
     public static void main(String[] args) {
-        int[] multiplicationSizes = {10, 100, 1000};
+        int[] multiplicationSizes = { 10, 100, 1000 };
         PrintStream out = System.out;
 
         boolean skipJava = false;

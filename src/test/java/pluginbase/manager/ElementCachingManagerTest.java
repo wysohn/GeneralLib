@@ -27,17 +27,18 @@ import org.powermock.reflect.Whitebox;
 public class ElementCachingManagerTest {
 
     @Test
-    public void testSaveLoad() throws Exception{
+    public void testSaveLoad() throws Exception {
         TestPlugin mockBase = PowerMock.createMock(TestPlugin.class);
         Logger mockLogger = PowerMock.createMock(Logger.class);
 
-        EasyMock.expect(mockBase.isEnabled()).andReturn(true).anyTimes();;
+        EasyMock.expect(mockBase.isEnabled()).andReturn(true).anyTimes();
+        ;
         EasyMock.expect(mockBase.getDataFolder()).andReturn(new File("ElementCachingManagerTestSuite1")).anyTimes();
         EasyMock.expect(mockBase.getPluginConfig()).andReturn(new TestConfig());
         EasyMock.expect(mockBase.getLogger()).andStubReturn(mockLogger);
 
         mockLogger.info(EasyMock.anyString());
-        EasyMock.expectLastCall().andAnswer(new IAnswer<Void>(){
+        EasyMock.expectLastCall().andAnswer(new IAnswer<Void>() {
 
             @Override
             public Void answer() throws Throwable {
@@ -54,7 +55,7 @@ public class ElementCachingManagerTest {
         Whitebox.invokeMethod(manager, "onEnable");
 
         UUID uuid = UUID.randomUUID();
-        System.out.println("GeneratedUUID: "+uuid);
+        System.out.println("GeneratedUUID: " + uuid);
 
         TestValue testValue1In = new TestValue("TestValue1");
         System.out.println(testValue1In.value + " save");
@@ -74,7 +75,7 @@ public class ElementCachingManagerTest {
     }
 
     @Test
-    public void testSaveLoadAsync() throws Exception{
+    public void testSaveLoadAsync() throws Exception {
         TestPlugin mockBase = PowerMock.createMock(TestPlugin.class);
         Logger mockLogger = PowerMock.createMock(Logger.class);
 
@@ -84,7 +85,7 @@ public class ElementCachingManagerTest {
         EasyMock.expect(mockBase.getLogger()).andStubReturn(mockLogger);
 
         mockLogger.info(EasyMock.anyString());
-        EasyMock.expectLastCall().andAnswer(new IAnswer<Void>(){
+        EasyMock.expectLastCall().andAnswer(new IAnswer<Void>() {
 
             @Override
             public Void answer() throws Throwable {
@@ -101,7 +102,7 @@ public class ElementCachingManagerTest {
         Whitebox.invokeMethod(manager, "onEnable");
 
         UUID uuid = UUID.randomUUID();
-        System.out.println("GeneratedUUID: "+uuid);
+        System.out.println("GeneratedUUID: " + uuid);
 
         TestValue testValue1In = new TestValue("TestValue1");
         System.out.println(testValue1In.value + " save");
@@ -124,7 +125,7 @@ public class ElementCachingManagerTest {
         Whitebox.invokeMethod(manager, "onDisable");
     }
 
-    public static class TestPlugin extends PluginBase{
+    public static class TestPlugin extends PluginBase {
 
         @Override
         protected void preEnable() {
@@ -133,11 +134,11 @@ public class ElementCachingManagerTest {
 
     }
 
-    public static class TestConfig extends PluginConfig{
+    public static class TestConfig extends PluginConfig {
 
     }
 
-    public static class TestManager extends ElementCachingManager<UUID, TestValue>{
+    public static class TestManager extends ElementCachingManager<UUID, TestValue> {
 
         public TestManager(PluginBase base, int loadPriority) {
             super(base, loadPriority);
@@ -172,7 +173,7 @@ public class ElementCachingManagerTest {
 
     }
 
-    public static class TestValue implements NamedElement{
+    public static class TestValue implements NamedElement {
         private final String value;
 
         public TestValue(String value) {

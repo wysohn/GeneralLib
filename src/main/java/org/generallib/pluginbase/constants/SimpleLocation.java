@@ -16,10 +16,11 @@
  *******************************************************************************/
 package org.generallib.pluginbase.constants;
 
-public class SimpleLocation implements Cloneable{
+public class SimpleLocation implements Cloneable {
     String world;
     int x, y, z;
     float pitch, yaw;
+
     public SimpleLocation(String world, int x, int y, int z) {
         super();
         this.world = world;
@@ -41,20 +42,25 @@ public class SimpleLocation implements Cloneable{
     public String getWorld() {
         return world;
     }
+
     public int getX() {
         return x;
     }
+
     public int getY() {
         return y;
     }
+
     public int getZ() {
         return z;
     }
-    public void add(int x, int y, int z){
+
+    public void add(int x, int y, int z) {
         this.x += x;
         this.y += y;
         this.z += z;
     }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -65,6 +71,7 @@ public class SimpleLocation implements Cloneable{
         result = prime * result + z;
         return result;
     }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -87,6 +94,7 @@ public class SimpleLocation implements Cloneable{
             return false;
         return true;
     }
+
     @Override
     public String toString() {
         return world + "@" + x + "," + y + "," + z;
@@ -97,25 +105,23 @@ public class SimpleLocation implements Cloneable{
         return new SimpleLocation(world, x, y, z);
     }
 
-    public static SimpleLocation valueOf(String str){
+    public static SimpleLocation valueOf(String str) {
         String[] splitw = str.split("@", 2);
-        if(splitw.length != 2)
+        if (splitw.length != 2)
             throw new SimpleLocationFormatException(str);
 
         String world = splitw[0];
 
         String[] splitl = splitw[1].split(",", 3);
-        if(splitl.length != 3)
+        if (splitl.length != 3)
             throw new SimpleLocationFormatException(str);
 
-        return new SimpleLocation(world,
-                Integer.parseInt(splitl[0]),
-                Integer.parseInt(splitl[1]),
+        return new SimpleLocation(world, Integer.parseInt(splitl[0]), Integer.parseInt(splitl[1]),
                 Integer.parseInt(splitl[2]));
     }
 
     @SuppressWarnings("serial")
-    public static class SimpleLocationFormatException extends RuntimeException{
+    public static class SimpleLocationFormatException extends RuntimeException {
         public SimpleLocationFormatException(String message) {
             super(message);
         }

@@ -18,13 +18,15 @@ package org.generallib.pluginbase.constants;
 
 public class SimpleChunkLocation {
     String world;
-    int i,j;
+    int i, j;
+
     public SimpleChunkLocation(String world, int i, int j) {
         super();
         this.world = world;
         this.i = i;
         this.j = j;
     }
+
     public SimpleChunkLocation(SimpleLocation sloc) {
         super();
         this.world = sloc.world;
@@ -35,22 +37,29 @@ public class SimpleChunkLocation {
     public String getWorld() {
         return world;
     }
+
     public int getI() {
         return i;
     }
+
     public int getJ() {
         return j;
     }
+
     /**
-     * SimpleChunkLocation is a consistent class, so this method will return new instance
-     * that added provided value to this instance.
-     * @param i x axis chunk coordinate to add
-     * @param j z axis chunk coordinate to add
+     * SimpleChunkLocation is a consistent class, so this method will return new
+     * instance that added provided value to this instance.
+     * 
+     * @param i
+     *            x axis chunk coordinate to add
+     * @param j
+     *            z axis chunk coordinate to add
      * @return
      */
-    public SimpleChunkLocation add(int i, int j){
+    public SimpleChunkLocation add(int i, int j) {
         return new SimpleChunkLocation(world, this.i + i, this.j + j);
     }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -60,6 +69,7 @@ public class SimpleChunkLocation {
         result = prime * result + ((world == null) ? 0 : world.hashCode());
         return result;
     }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -80,29 +90,28 @@ public class SimpleChunkLocation {
             return false;
         return true;
     }
+
     @Override
     public String toString() {
-        return world+"@"+i+","+j;
+        return world + "@" + i + "," + j;
     }
 
-    public static SimpleChunkLocation valueOf(String value){
+    public static SimpleChunkLocation valueOf(String value) {
         String[] splitw = value.split("@", 2);
-        if(splitw.length != 2)
+        if (splitw.length != 2)
             throw new SimpleChunkLocationFormatException(value);
 
         String world = splitw[0];
 
-        String[] splitc = splitw[1].split("," , 2);
-        if(splitc.length != 2)
+        String[] splitc = splitw[1].split(",", 2);
+        if (splitc.length != 2)
             throw new SimpleChunkLocationFormatException(value);
 
-        return new SimpleChunkLocation(world,
-                Integer.parseInt(splitc[0]),
-                Integer.parseInt(splitc[1]));
+        return new SimpleChunkLocation(world, Integer.parseInt(splitc[0]), Integer.parseInt(splitc[1]));
     }
 
     @SuppressWarnings("serial")
-    public static class SimpleChunkLocationFormatException extends RuntimeException{
+    public static class SimpleChunkLocationFormatException extends RuntimeException {
 
         public SimpleChunkLocationFormatException(String message) {
             super(message);

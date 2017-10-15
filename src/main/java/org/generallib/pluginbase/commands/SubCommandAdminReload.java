@@ -23,27 +23,27 @@ import org.generallib.pluginbase.PluginBase;
 import org.generallib.pluginbase.PluginLanguage.Language;
 import org.generallib.pluginbase.language.DefaultLanguages;
 
-public class SubCommandAdminReload extends SubCommandAdmin{
+public class SubCommandAdminReload extends SubCommandAdmin {
 
-	public SubCommandAdminReload(PluginBase base, String permission) {
-		super(base, permission, DefaultLanguages.Command_Reload_Description,
-				new Language[] { DefaultLanguages.Command_Reload_Usage }, 0, "reload");
-	}
-	
-	@Override
-	protected boolean executeConsole(CommandSender sender, String[] args) {
-		base.reloadPluginProcedures();
-		base.getLogger().info("Plugin is reloaded.");
-		
-		return true;
-	}
+    public SubCommandAdminReload(PluginBase base, String permission) {
+        super(base, permission, DefaultLanguages.Command_Reload_Description,
+                new Language[] { DefaultLanguages.Command_Reload_Usage }, 0, "reload");
+    }
 
-	@Override
-	protected boolean executeOp(Player op, String[] args) {
-		base.reloadPluginProcedures();
-		base.getLogger().info("Plugin is reloaded.");
-		
-		return true;
-	}
+    @Override
+    protected boolean executeConsole(CommandSender sender, String[] args) {
+        base.reloadPluginProcedures();
+        base.getLogger().info("Plugin is reloaded.");
+
+        return true;
+    }
+
+    @Override
+    protected boolean executeOp(Player op, String[] args) {
+        base.reloadPluginProcedures();
+        base.getLogger().info("Plugin is reloaded.");
+
+        return true;
+    }
 
 }

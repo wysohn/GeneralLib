@@ -26,13 +26,20 @@ import java.lang.annotation.Target;
  * An annotation that indicates this member should be serialized to JSON with
  * the provided name value as its field name.
  *
- * <p>This annotation will override any {@link copy.com.google.gson.FieldNamingPolicy}, including
- * the default field naming policy, that may have been set on the {@link copy.com.google.gson.Gson}
- * instance.  A different naming policy can set using the {@code GsonBuilder} class.  See
+ * <p>
+ * This annotation will override any
+ * {@link copy.com.google.gson.FieldNamingPolicy}, including the default field
+ * naming policy, that may have been set on the
+ * {@link copy.com.google.gson.Gson} instance. A different naming policy can set
+ * using the {@code GsonBuilder} class. See
  * {@link copy.com.google.gson.GsonBuilder#setFieldNamingPolicy(copy.com.google.gson.FieldNamingPolicy)}
- * for more information.</p>
+ * for more information.
+ * </p>
  *
- * <p>Here is an example of how this annotation is meant to be used:</p>
+ * <p>
+ * Here is an example of how this annotation is meant to be used:
+ * </p>
+ * 
  * <pre>
  * public class MyClass {
  *   &#64SerializedName("name") String a;
@@ -47,8 +54,11 @@ import java.lang.annotation.Target;
  * }
  * </pre>
  *
- * <p>The following shows the output that is generated when serializing an instance of the
- * above example class:</p>
+ * <p>
+ * The following shows the output that is generated when serializing an instance
+ * of the above example class:
+ * </p>
+ * 
  * <pre>
  * MyClass target = new MyClass("v1", "v2", "v3");
  * Gson gson = new Gson();
@@ -59,17 +69,22 @@ import java.lang.annotation.Target;
  * {"name":"v1","name1":"v2","c":"v3"}
  * </pre>
  *
- * <p>NOTE: The value you specify in this annotation must be a valid JSON field name.</p>
- * While deserializing, all values specified in the annotation will be deserialized into the field.
- * For example:
+ * <p>
+ * NOTE: The value you specify in this annotation must be a valid JSON field
+ * name.
+ * </p>
+ * While deserializing, all values specified in the annotation will be
+ * deserialized into the field. For example:
+ * 
  * <pre>
- *   MyClass target = gson.fromJson("{'name1':'v1'}", MyClass.class);
- *   assertEquals("v1", target.b);
- *   target = gson.fromJson("{'name2':'v2'}", MyClass.class);
- *   assertEquals("v2", target.b);
- *   target = gson.fromJson("{'name3':'v3'}", MyClass.class);
- *   assertEquals("v3", target.b);
+ * MyClass target = gson.fromJson("{'name1':'v1'}", MyClass.class);
+ * assertEquals("v1", target.b);
+ * target = gson.fromJson("{'name2':'v2'}", MyClass.class);
+ * assertEquals("v2", target.b);
+ * target = gson.fromJson("{'name3':'v3'}", MyClass.class);
+ * assertEquals("v3", target.b);
  * </pre>
+ * 
  * Note that MyClass.b is now deserialized from either name1, name2 or name3.
  *
  * @see copy.com.google.gson.FieldNamingPolicy
@@ -79,15 +94,17 @@ import java.lang.annotation.Target;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.METHOD})
+@Target({ ElementType.FIELD, ElementType.METHOD })
 public @interface SerializedName {
 
-  /**
-   * @return the desired name of the field when it is serialized or deserialized
-   */
-  String value();
-  /**
-   * @return the alternative names of the field when it is deserialized
-   */
-  String[] alternate() default {};
+    /**
+     * @return the desired name of the field when it is serialized or
+     *         deserialized
+     */
+    String value();
+
+    /**
+     * @return the alternative names of the field when it is deserialized
+     */
+    String[] alternate() default {};
 }

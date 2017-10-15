@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import org.generallib.pluginbase.manager.ElementCachingManager.NamedElement;
 
-public interface ClaimInfo extends NamedElement{
+public interface ClaimInfo extends NamedElement {
 
     @Override
     String getName();

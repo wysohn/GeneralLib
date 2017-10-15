@@ -16,6 +16,6 @@
  *******************************************************************************/
 package org.generallib.nms.world;
 
-public interface BlockFilter{
-	public boolean allow(int blockID, byte data);
+public interface BlockFilter {
+    public boolean allow(int blockID, byte data);
 }
