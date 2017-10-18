@@ -37,10 +37,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.generallib.main.FakePlugin;
 import org.generallib.pluginbase.PluginLanguage.Language;
 import org.generallib.pluginbase.language.DefaultLanguages;
+import org.generallib.pluginbase.manager.VolatileTaskManager;
 
 /**
  * Always register commands, managers, APIs, and languages.
- * 
+ *
  * @author wysohn
  *
  */
@@ -62,7 +63,7 @@ public abstract class PluginBase extends JavaPlugin {
 
     /**
      * schedule tasks to be run per each server tick.
-     * 
+     *
      * @param run
      * @return false if queue size reached 1,000,000.
      */
@@ -341,6 +342,7 @@ public abstract class PluginBase extends JavaPlugin {
         this.executor = this.executors.get(mainCommand[0]);
         this.APISupport = new PluginAPISupport();
 
+        registerManager(new VolatileTaskManager(this, PluginManager.NORM_PRIORITY));
         preEnable();
 
         initiatePluginProcedures();

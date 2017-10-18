@@ -55,10 +55,24 @@ public class SimpleLocation implements Cloneable {
         return z;
     }
 
-    public void add(int x, int y, int z) {
-        this.x += x;
-        this.y += y;
-        this.z += z;
+    public SimpleLocation add(int x, int y, int z) {
+        return new SimpleLocation(this.world, this.x + x, this.y + y, this.z + z);
+    }
+
+    public SimpleLocation add(SimpleLocation r) {
+        return add(r.x, r.y, r.z);
+    }
+
+    public SimpleLocation sub(int x, int y, int z) {
+        return new SimpleLocation(this.world, this.x - x, this.y - y, this.z - z);
+    }
+
+    public SimpleLocation sub(SimpleLocation r) {
+        return sub(r.x, r.y, r.z);
+    }
+
+    public int coordinatesSum() {
+        return x + y + z;
     }
 
     @Override
