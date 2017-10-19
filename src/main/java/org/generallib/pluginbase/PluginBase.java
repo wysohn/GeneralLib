@@ -37,6 +37,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.generallib.main.FakePlugin;
 import org.generallib.pluginbase.PluginLanguage.Language;
 import org.generallib.pluginbase.language.DefaultLanguages;
+import org.generallib.pluginbase.manager.PlayerLocationManager;
 import org.generallib.pluginbase.manager.VolatileTaskManager;
 
 /**
@@ -104,6 +105,9 @@ public abstract class PluginBase extends JavaPlugin {
         this.config = config;
         this.mainCommand = mainCommand;
         this.adminPermission = adminPermission;
+
+        registerManager(new PlayerLocationManager(this, PluginManager.NORM_PRIORITY));
+        registerManager(new VolatileTaskManager(this, PluginManager.NORM_PRIORITY));
     }
 
     private void initiatePluginProcedures() {
@@ -241,11 +245,6 @@ public abstract class PluginBase extends JavaPlugin {
                     this.getLogger().info(lang.parseFirstString(DefaultLanguages.Plugin_WillBeDisabled));
                     return;
                 }
-
-                if (manager instanceof Listener) {
-                    if (this.isEnabled())
-                        getServer().getPluginManager().registerEvents((Listener) manager, this);
-                }
             }
         }
     }
@@ -342,7 +341,6 @@ public abstract class PluginBase extends JavaPlugin {
         this.executor = this.executors.get(mainCommand[0]);
         this.APISupport = new PluginAPISupport();
 
-        registerManager(new VolatileTaskManager(this, PluginManager.NORM_PRIORITY));
         preEnable();
 
         initiatePluginProcedures();
