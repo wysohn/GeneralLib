@@ -1,8 +1,16 @@
 apply plugin: 'java-library'
+apply plugin: 'kotlin'
 apply plugin: 'java'
 
 buildscript {
-  	ext.bukkit_version = "1.12-R0.1-SNAPSHOT"
+    ext.kotlin_version = '1.1.51'
+    ext.bukkit_version = "1.12-R0.1-SNAPSHOT"
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
 }
 
 repositories {
@@ -68,9 +76,33 @@ dependencies {
 	testCompile group: 'org.easymock', name: 'easymock', version: '3.4'
 	// https://mvnrepository.com/artifact/org.powermock/powermock-api-mockito2
 	testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '1.7.1'
-	
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
+
 }
 
 jar {
-	from sourceSets.main.allJava
+	from sourceSets.main.java
+}
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+jar {
+    from {
+        String[] include = [
+                "kotlin-runtime-${kotlin_version}.jar",
+                "kotlin-stdlib-${kotlin_version}.jar"
+        ]
+
+        configurations.compile
+                .findAll { include.contains(it.name) }
+                .collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
