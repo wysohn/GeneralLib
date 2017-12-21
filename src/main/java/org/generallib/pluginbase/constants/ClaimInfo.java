@@ -14,6 +14,8 @@ public interface ClaimInfo extends NamedElement {
 
     Area getArea();
 
+    void setPublic(boolean bool);
+
     boolean isPublic();
 
     UUID getOwner();

@@ -166,7 +166,7 @@ public class ElementCachingManagerTest {
         }
 
         @Override
-        protected CacheDeleteHandle<UUID> getDeleteHandle() {
+        protected CacheDeleteHandle<UUID, TestValue> getDeleteHandle() {
             // TODO Auto-generated method stub
             return null;
         }

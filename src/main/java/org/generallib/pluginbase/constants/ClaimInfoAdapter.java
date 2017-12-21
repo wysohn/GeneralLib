@@ -10,6 +10,7 @@ public abstract class ClaimInfoAdapter implements ClaimInfo {
     private final String name;
 
     private UUID owner;
+    private boolean isPublic;
     private Set<UUID> trusts = new HashSet<>();
 
     public ClaimInfoAdapter(String name) {
@@ -18,7 +19,7 @@ public abstract class ClaimInfoAdapter implements ClaimInfo {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.generallib.pluginbase.constants.ClaimInfo#getName()
      */
     @Override
@@ -28,7 +29,7 @@ public abstract class ClaimInfoAdapter implements ClaimInfo {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.generallib.pluginbase.constants.ClaimInfo#setArea(org.generallib.
      * pluginbase.constants.Area)
@@ -40,7 +41,7 @@ public abstract class ClaimInfoAdapter implements ClaimInfo {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.generallib.pluginbase.constants.ClaimInfo#getArea()
      */
     @Override
@@ -48,19 +49,26 @@ public abstract class ClaimInfoAdapter implements ClaimInfo {
         return area;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.generallib.pluginbase.constants.ClaimInfo#isPublic()
-     */
+
+
     @Override
-    public boolean isPublic() {
-        return false;
+    public void setPublic(boolean bool) {
+        isPublic = bool;
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
+     * @see org.generallib.pluginbase.constants.ClaimInfo#isPublic()
+     */
+    @Override
+    public boolean isPublic() {
+        return isPublic;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
      * @see org.generallib.pluginbase.constants.ClaimInfo#getOwner()
      */
     @Override
@@ -70,7 +78,7 @@ public abstract class ClaimInfoAdapter implements ClaimInfo {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.generallib.pluginbase.constants.ClaimInfo#setOwner(java.util.UUID)
      */
@@ -81,7 +89,7 @@ public abstract class ClaimInfoAdapter implements ClaimInfo {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.generallib.pluginbase.constants.ClaimInfo#getTrusts()
      */
     @Override

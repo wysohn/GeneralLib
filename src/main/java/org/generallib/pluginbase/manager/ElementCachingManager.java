@@ -19,8 +19,6 @@ import org.generallib.database.tasks.DatabaseTransferTask.TransferPair;
 import org.generallib.pluginbase.PluginBase;
 import org.generallib.pluginbase.PluginManager;
 
-import com.google.common.collect.Sets;
-
 public abstract class ElementCachingManager<K, V extends ElementCachingManager.NamedElement>
         extends PluginManager<PluginBase> {
     /*
@@ -112,7 +110,7 @@ public abstract class ElementCachingManager<K, V extends ElementCachingManager.N
 
     /**
      * Generate key from the given String.
-     * 
+     *
      * @param str
      *            the deserializable String value.
      * @return deserialized object.
@@ -121,23 +119,23 @@ public abstract class ElementCachingManager<K, V extends ElementCachingManager.N
 
     /**
      * Get update handle to be used caching the data.
-     * 
+     *
      * @return
      */
     protected abstract CacheUpdateHandle<K, V> getUpdateHandle();
 
     /**
      * Get delete handle to be used removing data from cache.
-     * 
+     *
      * @return
      */
-    protected abstract CacheDeleteHandle<K> getDeleteHandle();
+    protected abstract CacheDeleteHandle<K, V> getDeleteHandle();
 
     public TransferPair<V> getTransferPair(Database<V> from) {
         return new TransferPair<V>(from, db);
     }
 
-    protected void updateCache() {
+    private void updateCache() {
         Set<String> strKeys = db.getKeys();
 
         Set<K> keys = new HashSet<>();
@@ -155,7 +153,7 @@ public abstract class ElementCachingManager<K, V extends ElementCachingManager.N
                     key = createKeyFromString(strKey);
                 } catch (Exception e) {
                     base.getLogger().warning("Removing invalid item with wrong key.");
-                    base.getLogger().warning("Key [" + key + "] is not an UUID.");
+                    base.getLogger().warning("Key [" + strKey + "] is not an UUID.");
                     base.getLogger().warning("In " + getClass().getSimpleName());
                 } finally {
                     if (key != null)
@@ -175,7 +173,7 @@ public abstract class ElementCachingManager<K, V extends ElementCachingManager.N
         }
     }
 
-    protected void updateCache(K key) {
+    private void updateCache(K key) {
         V newVal;
 
         synchronized (db) {
@@ -189,14 +187,15 @@ public abstract class ElementCachingManager<K, V extends ElementCachingManager.N
         cache(key, newVal, getUpdateHandle(), getDeleteHandle());
     }
 
-    private void cache(K key, V newVal, CacheUpdateHandle<K, V> updateHndle, CacheDeleteHandle<K> deleteHandle) {
+    private void cache(K key, V newVal, CacheUpdateHandle<K, V> updateHndle, CacheDeleteHandle<K, V> deleteHandle) {
         synchronized (cachedElements) {
             if (newVal == null) {
+                V original = cachedElements.remove(key);
+
                 if (deleteHandle != null) {
-                    deleteHandle.onDelete(key);
+                    deleteHandle.onDelete(key, original);
                 }
 
-                V original = cachedElements.remove(key);
                 if (original != null && original.getName() != null)
                     nameMap.remove(original.getName());
             } else {
@@ -273,15 +272,21 @@ public abstract class ElementCachingManager<K, V extends ElementCachingManager.N
         }
     }
 
+    /**
+     * Get copy of keys. This only represent snapshot of keys at the moment when this method is invoked.
+     * @return snapshot of key set.
+     */
     protected Set<K> getAllKeys() {
         synchronized (cachedElements) {
-            return Sets.newHashSet(cachedElements.keySet());
+            Set<K> newSet = new HashSet<>();
+            newSet.addAll(cachedElements.keySet());
+            return newSet;
         }
     }
 
     /**
      * Lock thread until previous database works are done
-     * 
+     *
      * @param key
      */
     public void check() {
@@ -363,6 +368,7 @@ public abstract class ElementCachingManager<K, V extends ElementCachingManager.N
         CacheUpdateThread() {
             this.setPriority(MIN_PRIORITY);
             this.setName("CacheUpdateThread");
+            this.setDaemon(true);
         }
 
         @Override
@@ -422,7 +428,7 @@ public abstract class ElementCachingManager<K, V extends ElementCachingManager.N
         T onUpdate(K key, T original);
     }
 
-    public interface CacheDeleteHandle<K> {
-        void onDelete(K key);
+    public interface CacheDeleteHandle<K, T extends NamedElement> {
+        void onDelete(K key, T deleted);
     }
 }

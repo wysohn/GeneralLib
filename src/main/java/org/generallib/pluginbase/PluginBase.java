@@ -38,6 +38,7 @@ import org.generallib.main.FakePlugin;
 import org.generallib.pluginbase.PluginLanguage.Language;
 import org.generallib.pluginbase.language.DefaultLanguages;
 import org.generallib.pluginbase.manager.PlayerLocationManager;
+import org.generallib.pluginbase.manager.TargetBlockManager;
 import org.generallib.pluginbase.manager.VolatileTaskManager;
 
 /**
@@ -108,6 +109,7 @@ public abstract class PluginBase extends JavaPlugin {
 
         registerManager(new PlayerLocationManager(this, PluginManager.NORM_PRIORITY));
         registerManager(new VolatileTaskManager(this, PluginManager.NORM_PRIORITY));
+        registerManager(new TargetBlockManager(this, PluginManager.NORM_PRIORITY));
     }
 
     private void initiatePluginProcedures() {

@@ -20,7 +20,25 @@ public class Area {
         return largest;
     }
 
+    /**
+     * @param sloc
+     * @return
+     * @deprecated method name can be confusing. Same as using {@link #isContainingLocation(SimpleLocation)}
+     */
+    @Deprecated
     public boolean isInThisArea(SimpleLocation sloc) {
+        if (smallest.getX() <= sloc.getX() && sloc.getX() <= largest.getX() && smallest.getY() <= sloc.getY()
+                && sloc.getY() <= largest.getY() && smallest.getZ() <= sloc.getZ() && sloc.getZ() <= largest.getZ())
+            return true;
+        return false;
+    }
+
+    /**
+     * Check if the location is inside the region.
+     * @param sloc location to check
+     * @return true if location is in this Area.
+     */
+    public boolean isContainingLocation(SimpleLocation sloc) {
         if (smallest.getX() <= sloc.getX() && sloc.getX() <= largest.getX() && smallest.getY() <= sloc.getY()
                 && sloc.getY() <= largest.getY() && smallest.getZ() <= sloc.getZ() && sloc.getZ() <= largest.getZ())
             return true;
@@ -172,7 +190,7 @@ public class Area {
 
     /**
      * Retrieve all the chunks that contains the 'area'
-     * 
+     *
      * @param area
      *            the area
      * @return list of chunks that holds the area.

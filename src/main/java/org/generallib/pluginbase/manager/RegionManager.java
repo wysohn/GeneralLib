@@ -53,7 +53,7 @@ public abstract class RegionManager<T extends PluginBase, V extends ClaimInfo> e
     }
 
     @Override
-    protected CacheDeleteHandle<Area> getDeleteHandle() {
+    protected CacheDeleteHandle<Area, V> getDeleteHandle() {
         return deleteHandle;
     }
 
@@ -153,7 +153,7 @@ public abstract class RegionManager<T extends PluginBase, V extends ClaimInfo> e
     /**
      * Set info of area. If 'info' is null, the data connected with key 'area'
      * will be removed.
-     * 
+     *
      * @param area
      * @param info
      */
@@ -225,7 +225,7 @@ public abstract class RegionManager<T extends PluginBase, V extends ClaimInfo> e
 
     /**
      * This method is not thread safe.
-     * 
+     *
      * @param area
      * @param info
      */
@@ -243,7 +243,7 @@ public abstract class RegionManager<T extends PluginBase, V extends ClaimInfo> e
 
     /**
      * This method is not thread safe.
-     * 
+     *
      * @param area
      */
     private void removeAreaCache(Area area) {
@@ -261,7 +261,7 @@ public abstract class RegionManager<T extends PluginBase, V extends ClaimInfo> e
     /**
      * get all the area that is conflicting with given area. This does not
      * include the area itself. It's quite a CPU intensive work; use it wisely
-     * 
+     *
      * @param area
      * @return never be null; can be empty if no conflicts are found
      */
@@ -294,15 +294,16 @@ public abstract class RegionManager<T extends PluginBase, V extends ClaimInfo> e
         @Override
         public V onUpdate(Area key, V original) {
             original.setArea(key);
+            setAreaCache(key);
             return null;
         }
 
     };
 
-    private final CacheDeleteHandle<Area> deleteHandle = new CacheDeleteHandle<Area>() {
+    private final CacheDeleteHandle<Area, V> deleteHandle = new CacheDeleteHandle<Area, V>() {
 
         @Override
-        public void onDelete(Area key) {
+        public void onDelete(Area key, V value) {
             removeAreaCache(key);
         }
 
@@ -310,7 +311,7 @@ public abstract class RegionManager<T extends PluginBase, V extends ClaimInfo> e
 
     /**
      * The handle that is responsible for each Bukkit API events.
-     * 
+     *
      * @author wysohn
      *
      */
@@ -334,7 +335,7 @@ public abstract class RegionManager<T extends PluginBase, V extends ClaimInfo> e
         /**
          * This method will be invoked before any events will be hand over to
          * the EventHandles.
-         * 
+         *
          * @param e
          *            event to handle
          * @param cause

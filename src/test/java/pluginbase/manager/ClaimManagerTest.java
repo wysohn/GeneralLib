@@ -277,5 +277,11 @@ public class ClaimManagerTest {
 
         }
 
+        @Override
+        public void setPublic(boolean bool) {
+            // TODO Auto-generated method stub
+
+        }
+
     }
 }
