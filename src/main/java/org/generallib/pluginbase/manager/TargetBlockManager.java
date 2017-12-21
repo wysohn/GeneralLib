@@ -60,6 +60,7 @@ public class TargetBlockManager extends PluginManager<PluginBase> implements Lis
 
         if(e.getPlayer().isSneaking()) {
             callbackMap.remove(uuid);
+            base.sendMessage(e.getPlayer(), DefaultLanguages.TargetBlockManager_Canceled);
         }else {
             callbackMap.remove(uuid).onClick(e);
         }

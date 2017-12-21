@@ -55,7 +55,8 @@ public enum DefaultLanguages implements Language {
 
     VolatileTaskManager_CanceledCauseMoved("&cTask is cancelled because you moved!"),
 
-    TargetBlockManager_ReadyToClick("&7Now &aclick &7the target block. You may just cancel it by &cshift + click &7any block.")
+    TargetBlockManager_ReadyToClick("&7Now &aclick &7the target block. You may just cancel it by &cshift + click &7any block."),
+    TargetBlockManager_Canceled("&7Cancelled."),
 
     ;
 
