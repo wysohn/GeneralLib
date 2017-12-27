@@ -42,7 +42,7 @@ import org.generallib.pluginbase.manager.event.PlayerChunkLocationEvent;
 public class PlayerLocationManager<T extends PluginBase> extends PluginManager<T> implements Listener {
     private transient Map<UUID, SimpleLocation> locations = new ConcurrentHashMap<>();
 
-    public PlayerLocationManager(T base, int loadPriority) {
+    private PlayerLocationManager(T base, int loadPriority) {
         super(base, loadPriority);
     }
 
@@ -63,7 +63,7 @@ public class PlayerLocationManager<T extends PluginBase> extends PluginManager<T
 
     /**
      * get location of player
-     * 
+     *
      * @param uuid
      *            uuid of player
      * @return the location. If the player just logged in, it might be null.
@@ -74,7 +74,7 @@ public class PlayerLocationManager<T extends PluginBase> extends PluginManager<T
 
     /**
      * set current location of the player
-     * 
+     *
      * @param uuid
      *            the player's uuid
      * @param sloc
@@ -86,7 +86,7 @@ public class PlayerLocationManager<T extends PluginBase> extends PluginManager<T
 
     /**
      * remove the current location of the player.
-     * 
+     *
      * @param uuid
      *            the player's uuid
      */
@@ -166,4 +166,11 @@ public class PlayerLocationManager<T extends PluginBase> extends PluginManager<T
         }
     }
 
+    private static PlayerLocationManager<PluginBase> sharedInstance = null;
+    public static PlayerLocationManager<PluginBase> getSharedInstance(PluginBase base) {
+        if(sharedInstance == null) {
+            sharedInstance = new PlayerLocationManager<PluginBase>(base, PluginManager.SLOWEST_PRIORITY);
+        }
+        return sharedInstance;
+    }
 }

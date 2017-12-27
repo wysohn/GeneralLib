@@ -107,7 +107,7 @@ public abstract class PluginBase extends JavaPlugin {
         this.mainCommand = mainCommand;
         this.adminPermission = adminPermission;
 
-        registerManager(new PlayerLocationManager(this, PluginManager.NORM_PRIORITY));
+        registerManager(PlayerLocationManager.getSharedInstance(this));
         registerManager(new VolatileTaskManager(this, PluginManager.NORM_PRIORITY));
         registerManager(new TargetBlockManager(this, PluginManager.NORM_PRIORITY));
     }

@@ -54,7 +54,7 @@ public class NmsChunkManager implements INmsWorldManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.generallib.nms.chunk.IChunkGenerator#regenerateChunk(org.bukkit.
      * World, int, int, org.generallib.nms.chunk.ChunkRegenerator.BlockFilter)
      */
