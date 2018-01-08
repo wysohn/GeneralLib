@@ -31,7 +31,6 @@ import org.bukkit.entity.Player;
 import org.generallib.main.FakePlugin;
 import org.generallib.nms.world.BlockFilter;
 import org.generallib.nms.world.INmsWorldManager;
-import org.generallib.pluginbase.PluginBase;
 
 import net.minecraft.server.v1_11_R1.ChunkProviderServer;
 import net.minecraft.server.v1_11_R1.IChunkLoader;
@@ -54,7 +53,7 @@ public class NmsChunkManager implements INmsWorldManager {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.generallib.nms.chunk.IChunkGenerator#regenerateChunk(org.bukkit.
      * World, int, int, org.generallib.nms.chunk.ChunkRegenerator.BlockFilter)
      */
@@ -74,16 +73,11 @@ public class NmsChunkManager implements INmsWorldManager {
 
                     final Block target = chunk.getBlock(x, y, z);
 
-                    PluginBase.runAsynchronously(new Runnable() {
+                    Bukkit.getScheduler().runTask(FakePlugin.instance, new Runnable() {
                         @Override
                         public void run() {
-                            Bukkit.getScheduler().runTask(FakePlugin.instance, new Runnable() {
-                                @Override
-                                public void run() {
-                                    target.setTypeId(block.getTypeId());
-                                    target.setData(block.getData());
-                                }
-                            });
+                            target.setTypeId(block.getTypeId());
+                            target.setData(block.getData());
                         }
                     });
 
