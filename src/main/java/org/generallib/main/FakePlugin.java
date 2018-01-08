@@ -16,7 +16,11 @@
  *******************************************************************************/
 package org.generallib.main;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
@@ -26,24 +30,31 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.conversations.ConversationAbandonedEvent;
+import org.bukkit.conversations.ConversationAbandonedListener;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.generallib.nms.entity.INmsEntityManager;
 import org.generallib.nms.particle.INmsParticleSender;
 import org.generallib.nms.world.BlockFilter;
 import org.generallib.nms.world.INmsWorldManager;
+import org.generallib.pluginbase.PluginBase;
+import org.generallib.pluginbase.manager.PropertyEditManager;
 
 //just a fake plugin
-public class FakePlugin extends JavaPlugin {
+public class FakePlugin extends PluginBase {
     public static Plugin instance;
 
     public static INmsWorldManager nmsWorldManager;
     public static INmsEntityManager nmsEntityManager;
     public static INmsParticleSender nmsParticleSender;
 
+    public FakePlugin() {
+        super(new FakePluginConfig(), "glib", "glib.admin");
+    }
+
     @Override
-    public void onEnable() {
+    protected void preEnable() {
         instance = this;
 
         String packageName = getServer().getClass().getPackage().getName();
@@ -88,6 +99,42 @@ public class FakePlugin extends JavaPlugin {
     };
     private static UUID temp = UUID.randomUUID();
 
+    private static Map<String, Object> props = new HashMap<String, Object>(){{
+        put("int", 1);
+        put("double", 1.5);
+        put("boolean", false);
+        put("String", "some string");
+        put("list", new ArrayList<String>() {{
+            add("hi");
+            add("hello");
+            add("hola");
+        }});
+        put("map", new HashMap<String, Object>(){{
+            put("int2", 2);
+            put("double2", 2.5);
+            put("boolean2", false);
+            put("String2", "some string2");
+            put("list2", new ArrayList<String>() {{
+                add("hi2");
+                add("hello2");
+                add("hola2");
+            }});
+            put("map2", new HashMap<String, Object>(){{
+                put("int3", 1);
+                put("double3", 1.5);
+                put("boolean3", false);
+                put("String3", "some string3");
+                put("list3", new ArrayList<String>() {{
+                    add("hi3");
+                    add("hello3");
+                    add("hola3");
+                }});
+                put("map3", new HashMap<String, Object>(){{
+
+                }});
+            }});
+        }});
+    }};
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player && !((Player) sender).isOp())
@@ -145,6 +192,23 @@ public class FakePlugin extends JavaPlugin {
                         }
                     });
                 }
+            } else if(args.length == 2) {
+                if(args[0].equalsIgnoreCase("prop")) {
+                    if(args[1].equals("show")) {
+                        printProp(sender, 0, props);
+                    }else if(args[1].equals("start")) {
+                        PropertyEditManager m = this.getManager(PropertyEditManager.class);
+                        m.startEdit((Player) sender, "Test", props, new ConversationAbandonedListener() {
+
+                            @Override
+                            public void conversationAbandoned(ConversationAbandonedEvent arg0) {
+                                printProp(sender, 0, (Map<String, Object>) arg0.getContext()
+                                        .getSessionData(PropertyEditManager.PROPERTY_SESSIONDATANAME));
+                            }
+
+                        });
+                    }
+                }
             }
         } catch (Exception e) {
             sender.sendMessage(ChatColor.RED + e.getMessage());
@@ -153,4 +217,22 @@ public class FakePlugin extends JavaPlugin {
 
         return true;
     }
+
+    private static void printProp(CommandSender sender, int level, Map<String, Object> map) {
+        for(Entry<String, Object> entry : map.entrySet()) {
+            if(entry.getValue() instanceof Map) {
+                StringBuilder builder = new StringBuilder();
+                for(int i = 0; i < level * 4; i++)
+                    builder.append(' ');
+                sender.sendMessage(builder.toString()+entry.getKey()+":");
+                printProp(sender, level + 1, (Map<String, Object>) entry.getValue());
+            }else {
+                StringBuilder builder = new StringBuilder();
+                for(int i = 0; i < level * 4; i++)
+                    builder.append(' ');
+                sender.sendMessage(builder.toString()+String.valueOf(entry));
+            }
+        }
+    }
+
 }

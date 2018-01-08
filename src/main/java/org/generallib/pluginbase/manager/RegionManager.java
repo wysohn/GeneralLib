@@ -66,59 +66,59 @@ public abstract class RegionManager<T extends PluginBase, V extends ClaimInfo> e
     }
 
     protected void initEvent(Class<? extends Event> event, final EventHandle eventHandle) {
-        registeredEventTypes.add(event);
+        if(registeredEventTypes.add(event)) {
+            Bukkit.getPluginManager().registerEvent(event, this, EventPriority.NORMAL, new EventExecutor() {
 
-        Bukkit.getPluginManager().registerEvent(event, this, EventPriority.NORMAL, new EventExecutor() {
-
-            @Override
-            public void execute(Listener arg0, Event arg1) throws EventException {
-                Location loc = eventHandle.getLocation(arg1);
-                if (loc == null)
-                    return;
-
-                Entity cause = eventHandle.getCause(arg1);
-
-                // canceled
-                if (generalEventHandle != null && generalEventHandle.preEvent(arg1, loc, cause)) {
-                    return;
-                }
-
-                SimpleLocation sloc = LocationUtil.convertToSimpleLocation(loc);
-
-                V claim = RegionManager.this.getAreaInfo(sloc);
-                if (claim == null)
-                    return;
-
-                // don't protect if chunk is public
-                if (claim.isPublic())
-                    return;
-
-                if (cause != null && cause instanceof Player) {
-                    Player p = (Player) cause;
-
-                    if (p.isOp())
+                @Override
+                public void execute(Listener arg0, Event arg1) throws EventException {
+                    Location loc = eventHandle.getLocation(arg1);
+                    if (loc == null)
                         return;
 
-                    UUID uuid = p.getUniqueId();
+                    Entity cause = eventHandle.getCause(arg1);
 
-                    if (uuid.equals(claim.getOwner()))
+                    // canceled
+                    if (generalEventHandle != null && generalEventHandle.preEvent(arg1, loc, cause)) {
+                        return;
+                    }
+
+                    SimpleLocation sloc = LocationUtil.convertToSimpleLocation(loc);
+
+                    V claim = RegionManager.this.getAreaInfo(sloc);
+                    if (claim == null)
                         return;
 
-                    if (claim.getTrusts().contains(uuid))
+                    // don't protect if chunk is public
+                    if (claim.isPublic())
                         return;
+
+                    if (cause instanceof Player) {
+                        Player p = (Player) cause;
+
+                        if (p.isOp())
+                            return;
+
+                        UUID uuid = p.getUniqueId();
+
+                        if (uuid.equals(claim.getOwner()))
+                            return;
+
+                        if (claim.getTrusts().contains(uuid))
+                            return;
+                    }
+
+                    // canceled
+                    if (generalEventHandle != null) {
+                        generalEventHandle.postEvent(arg1);
+                    }
+
+                    if(arg1 instanceof Cancellable && ((Cancellable) arg1).isCancelled() && cause instanceof Player) {
+                        base.sendMessage(cause, DefaultLanguages.General_NotEnoughPermission);
+                    }
                 }
 
-                if (cause instanceof Player) {
-                    base.sendMessage(cause, DefaultLanguages.General_NotEnoughPermission);
-                }
-
-                // canceled
-                if (generalEventHandle != null) {
-                    generalEventHandle.postEvent(arg1);
-                }
-            }
-
-        }, base);
+            }, base);
+        }
     }
 
     public V getAreaInfo(SimpleLocation sloc) {

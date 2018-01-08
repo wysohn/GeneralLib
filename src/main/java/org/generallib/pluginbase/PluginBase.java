@@ -23,6 +23,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -54,6 +55,10 @@ public abstract class PluginBase extends JavaPlugin {
 
     private String[] mainCommand;
     private String adminPermission;
+
+    public static void runAsynchronously(Runnable run) {
+        Bukkit.getScheduler().runTaskAsynchronously(FakePlugin.instance, run);
+    }
 
     /**
      * Do not call this contstructor.

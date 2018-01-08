@@ -41,13 +41,13 @@ import java.io.Writer;
  * nesting arrays and objects as necessary:
  * <ul>
  * <li>To write <strong>arrays</strong>, first call {@link #beginArray()}. Write
- * each of the array's elements with the appropriate {@link #value} methods or
+ * each of the array's elements with the appropriate {@link #changer} methods or
  * by nesting other arrays and objects. Finally close the array using
  * {@link #endArray()}.
  * <li>To write <strong>objects</strong>, first call {@link #beginObject()}.
  * Write each of the object's properties by alternating calls to {@link #name}
  * with the property's value. Write property values with the appropriate
- * {@link #value} method or by nesting other objects or arrays. Finally close
+ * {@link #changer} method or by nesting other objects or arrays. Finally close
  * the object using {@link #endObject()}.
  * </ul>
  *
