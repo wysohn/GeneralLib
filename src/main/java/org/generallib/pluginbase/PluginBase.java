@@ -18,17 +18,11 @@ package org.generallib.pluginbase;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Queue;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -38,6 +32,7 @@ import org.generallib.main.FakePlugin;
 import org.generallib.pluginbase.PluginLanguage.Language;
 import org.generallib.pluginbase.language.DefaultLanguages;
 import org.generallib.pluginbase.manager.PlayerLocationManager;
+import org.generallib.pluginbase.manager.PropertyEditManager;
 import org.generallib.pluginbase.manager.TargetBlockManager;
 import org.generallib.pluginbase.manager.VolatileTaskManager;
 
@@ -48,35 +43,6 @@ import org.generallib.pluginbase.manager.VolatileTaskManager;
  *
  */
 public abstract class PluginBase extends JavaPlugin {
-    private static final ExecutorService pool = Executors.newScheduledThreadPool(4, new ThreadFactory() {
-        @Override
-        public Thread newThread(Runnable r) {
-            Thread thread = new Thread(r);
-            thread.setPriority(Thread.MIN_PRIORITY);
-            return thread;
-        }
-    });
-
-    public static void runAsynchronously(Runnable run) {
-        PluginBase.pool.execute(run);
-    }
-
-    private final Queue<Runnable> queuedTasks = new LinkedList<Runnable>();
-
-    /**
-     * schedule tasks to be run per each server tick.
-     *
-     * @param run
-     * @return false if queue size reached 1,000,000.
-     */
-    public boolean runPerTick(Runnable run) {
-        if (queuedTasks.size() > 1000000)
-            return false;
-
-        queuedTasks.add(run);
-        return true;
-    }
-
     final Map<Class<? extends PluginManager>, PluginManager> pluginManagers = new HashMap<Class<? extends PluginManager>, PluginManager>();
 
     private PluginConfig config;
@@ -110,6 +76,7 @@ public abstract class PluginBase extends JavaPlugin {
         registerManager(PlayerLocationManager.getSharedInstance(this));
         registerManager(new VolatileTaskManager(this, PluginManager.NORM_PRIORITY));
         registerManager(new TargetBlockManager(this, PluginManager.NORM_PRIORITY));
+        registerManager(new PropertyEditManager(this, PluginManager.NORM_PRIORITY));
     }
 
     private void initiatePluginProcedures() {
@@ -146,13 +113,10 @@ public abstract class PluginBase extends JavaPlugin {
             this.setEnabled(false);
         }
 
-        Map<Integer, Set<PluginManager>> map = new TreeMap<Integer, Set<PluginManager>>() {
-            {
-                for (int i = PluginManager.FASTEST_PRIORITY; i <= PluginManager.SLOWEST_PRIORITY; i++) {
-                    put(i, new HashSet<PluginManager>());
-                }
-            }
-        };
+        Map<Integer, Set<PluginManager>> map = new TreeMap<Integer, Set<PluginManager>>();
+        for (int i = PluginManager.FASTEST_PRIORITY; i <= PluginManager.SLOWEST_PRIORITY; i++) {
+            map.put(i, new HashSet<PluginManager>());
+        }
 
         for (Entry<Class<? extends PluginManager>, PluginManager> entry : pluginManagers.entrySet()) {
             Set<PluginManager> set = map.get(entry.getValue().getLoadPriority());
@@ -219,13 +183,10 @@ public abstract class PluginBase extends JavaPlugin {
             this.getLogger().severe(e.getClass().getSimpleName() + "@" + e.getMessage());
         }
 
-        Map<Integer, Set<PluginManager>> map = new TreeMap<Integer, Set<PluginManager>>() {
-            {
-                for (int i = PluginManager.FASTEST_PRIORITY; i <= PluginManager.SLOWEST_PRIORITY; i++) {
-                    put(i, new HashSet<PluginManager>());
-                }
-            }
-        };
+        Map<Integer, Set<PluginManager>> map = new TreeMap<Integer, Set<PluginManager>>();
+        for (int i = PluginManager.FASTEST_PRIORITY; i <= PluginManager.SLOWEST_PRIORITY; i++) {
+            map.put(i, new HashSet<PluginManager>());
+        }
 
         for (Entry<Class<? extends PluginManager>, PluginManager> entry : pluginManagers.entrySet()) {
             Set<PluginManager> set = map.get(entry.getValue().getLoadPriority());
@@ -285,13 +246,10 @@ public abstract class PluginBase extends JavaPlugin {
             this.getLogger().severe(e.getClass().getSimpleName() + "@" + e.getMessage());
         }
 
-        Map<Integer, Set<PluginManager>> map = new TreeMap<Integer, Set<PluginManager>>() {
-            {
-                for (int i = PluginManager.FASTEST_PRIORITY; i <= PluginManager.SLOWEST_PRIORITY; i++) {
-                    put(i, new HashSet<PluginManager>());
-                }
-            }
-        };
+        Map<Integer, Set<PluginManager>> map = new TreeMap<Integer, Set<PluginManager>>();
+        for (int i = PluginManager.FASTEST_PRIORITY; i <= PluginManager.SLOWEST_PRIORITY; i++) {
+            map.put(i, new HashSet<PluginManager>());
+        }
 
         for (Entry<Class<? extends PluginManager>, PluginManager> entry : pluginManagers.entrySet()) {
             Set<PluginManager> set = map.get(entry.getValue().getLoadPriority());
@@ -330,11 +288,8 @@ public abstract class PluginBase extends JavaPlugin {
         }
 
         String def = config.Plugin_Language_Default;
-        Set<String> list = new HashSet<String>() {
-            {
-                addAll(config.Plugin_Language_List);
-            }
-        };
+        Set<String> list = new HashSet<String>();
+        list.addAll(config.Plugin_Language_List);
 
         this.lang = new PluginLanguage(list, def);
         this.executors = new HashMap<>();
@@ -346,24 +301,6 @@ public abstract class PluginBase extends JavaPlugin {
         preEnable();
 
         initiatePluginProcedures();
-
-        if (this.isEnabled()) {
-            Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
-                @Override
-                public void run() {
-                    Set<Runnable> send = new HashSet<Runnable>();
-                    for (int i = 0; i < 1000 && !queuedTasks.isEmpty(); i++) {
-                        Runnable run = queuedTasks.poll();
-                        if (run == null)
-                            continue;
-                        send.add(run);
-                    }
-
-                    for (Runnable run : send)
-                        run.run();
-                }
-            }, 10L, 1L);
-        }
     }
 
     /**
