@@ -1,19 +1,24 @@
 package org.generallib.pluginbase.manager.prompts;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.bukkit.conversations.Conversable;
 import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
+import org.generallib.pluginbase.PluginBase;
+import org.generallib.pluginbase.PluginLanguage.Language;
+import org.generallib.pluginbase.language.DefaultLanguages;
 
 public abstract class IndexBasedPrompt<T> extends EditPromptBase {
     private final List<T> currentData;
 
     private int currentIndex = 0;
 
-    public IndexBasedPrompt(Prompt parent, String title, List<T> currentData) {
-        super(parent, title);
-        this.currentData = currentData;
+    public IndexBasedPrompt(PluginBase base, Prompt parent, Object title, List<T> list) {
+        super(base, parent, title);
+        this.currentData = list;
     }
 
     @Override
@@ -51,6 +56,9 @@ public abstract class IndexBasedPrompt<T> extends EditPromptBase {
     }
 
     protected T get(int index) {
+        if(!validateIndex(index))
+            return null;
+
         return currentData.get(index);
     }
 
@@ -96,16 +104,31 @@ public abstract class IndexBasedPrompt<T> extends EditPromptBase {
             if(realIndex >= currentData.size())
                 continue;
 
-            conv.sendRawMessage(realIndex + ". " + currentData.get(realIndex));
+            T data = currentData.get(realIndex);
+            if(data instanceof Map.Entry) {
+                //highly likely the edit data
+                Map.Entry<Language, Object> entry = (Entry<Language, Object>) data;
+
+                String translatedKey = base.lang.parseFirstString(conv, entry.getKey());
+                String value = String.valueOf(entry.getValue());
+                value = value.substring(0, Math.min(30, value.length()));
+
+                base.lang.addString(translatedKey+"="+value);
+            }else {
+                base.lang.addString(String.valueOf(data));
+            }
+
+            base.lang.addInteger(realIndex);
+            conv.sendRawMessage(base.lang.parseFirstString(conv, DefaultLanguages.General_IndexBasedPrompt_ListFormat));
         }
         conv.sendRawMessage("");
 
-        conv.sendRawMessage(currentIndex + "/"+ currentData.size());
+        conv.sendRawMessage(currentIndex + " / "+ currentData.size());
         conv.sendRawMessage("");
 
-        conv.sendRawMessage("d [num] - go down the list");
-        conv.sendRawMessage("u [num] - go up the list");
-        conv.sendRawMessage("done - finish editing");
+        conv.sendRawMessage(base.lang.parseFirstString(conv, DefaultLanguages.General_IndexBasedPrompt_UpDescription));
+        conv.sendRawMessage(base.lang.parseFirstString(conv, DefaultLanguages.General_IndexBasedPrompt_DownDescription));
+        conv.sendRawMessage(base.lang.parseFirstString(conv, DefaultLanguages.General_IndexBasedPrompt_Done));
         conv.sendRawMessage("");
     }
 

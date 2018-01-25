@@ -33,7 +33,6 @@ import java.util.Queue;
 import java.util.Set;
 
 import org.apache.commons.lang.Validate;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -206,7 +205,7 @@ public final class PluginLanguage implements PluginProcedure {
         return result.length < 1 ? "NULL" : result[0];
     }
 
-    public String parseFirstString(CommandSender sender, Language lang) {
+    public String parseFirstString(Object sender, Language lang) {
         String locale = null;
         String[] result = new String[0];
 
@@ -223,12 +222,12 @@ public final class PluginLanguage implements PluginProcedure {
         return result.length < 1 ? "NULL" : result[0];
     }
 
-    public String parseFirstString(CommandSender sender, Locale locale, Language lang) {
+    public String parseFirstString(Object sender, Locale locale, Language lang) {
         String[] result = parseStrings(sender, lang, locale.toString());
         return result.length < 1 ? "NULL" : result[0];
     }
 
-    public String parseFirstString(CommandSender sender, Language lang, String locale) {
+    public String parseFirstString(Object sender, Language lang, String locale) {
         String[] result = parseStrings(sender, lang, locale);
         return result.length < 1 ? "NULL" : result[0];
     }
@@ -237,7 +236,7 @@ public final class PluginLanguage implements PluginProcedure {
         return parseStrings(null, lang, null);
     }
 
-    public String[] parseStrings(CommandSender sender, Language lang) {
+    public String[] parseStrings(Object sender, Language lang) {
         String locale = null;
         try {
             if (sender instanceof Player)
@@ -249,7 +248,7 @@ public final class PluginLanguage implements PluginProcedure {
         return parseStrings(sender, lang, locale);
     }
 
-    public String[] parseStrings(CommandSender sender, Locale locale, Language lang) {
+    public String[] parseStrings(Object sender, Locale locale, Language lang) {
         return parseStrings(sender, lang, locale.toString());
     }
 
@@ -262,7 +261,7 @@ public final class PluginLanguage implements PluginProcedure {
      */
 
     @SuppressWarnings("unchecked")
-    public String[] parseStrings(CommandSender sender, Language lang, String locale) {
+    public String[] parseStrings(Object sender, Language lang, String locale) {
         if (locale == null)
             locale = defaultLang;
 
@@ -311,7 +310,7 @@ public final class PluginLanguage implements PluginProcedure {
         return coloredMsg;
     }
 
-    private void replaceVariables(CommandSender sender, List<String> strings) {
+    private void replaceVariables(Object sender, List<String> strings) {
         for (int i = 0; i < strings.size(); i++) {
             String str = strings.get(i);
             if (str == null)
@@ -355,7 +354,7 @@ public final class PluginLanguage implements PluginProcedure {
                         str = leftStr + String.valueOf(this.bool.poll()) + rightStr;
                         break;
                     case "player":
-                        str = leftStr + (sender == null ? "null" : sender.getName()) + rightStr;
+                        str = leftStr + (sender instanceof Player ? ((Player) sender).getName() : "null") + rightStr;
                         break;
                     case "dbtype":
                         String dbTypes = "[";
@@ -390,7 +389,7 @@ public final class PluginLanguage implements PluginProcedure {
      * Create enum class and implement this interface. See
      * {@link DefaultLanguages} for example. It is also expected to get
      * registered in {@link PluginLanguage} using registerLanguage() method.
-     * 
+     *
      * @author wysohn
      *
      */

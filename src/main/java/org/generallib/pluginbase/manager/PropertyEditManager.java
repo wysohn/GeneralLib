@@ -8,6 +8,7 @@ import org.bukkit.conversations.ConversationFactory;
 import org.bukkit.conversations.Prompt;
 import org.bukkit.entity.Player;
 import org.generallib.pluginbase.PluginBase;
+import org.generallib.pluginbase.PluginLanguage.Language;
 import org.generallib.pluginbase.PluginManager;
 import org.generallib.pluginbase.manager.prompts.EditPrompt;
 
@@ -40,10 +41,10 @@ public class PropertyEditManager extends PluginManager<PluginBase> {
      * (Ex. ConversationContext.getSessionData(PropertyEditManager.PROPERTY_SESSIONDATANAME))
      * @param abandonListener
      */
-    public void startEdit(Player whom, String title, Map<String, Object> property, ConversationAbandonedListener abandonListener) {
+    public void startEdit(Player whom, String title, Map<Language, Object> property, ConversationAbandonedListener abandonListener) {
         ConversationFactory factory = new ConversationFactory(base);
 
-        EditPrompt prompt = new EditPrompt(Prompt.END_OF_CONVERSATION, title, property);
+        EditPrompt prompt = new EditPrompt(base, Prompt.END_OF_CONVERSATION, title, property);
         Conversation conv = factory.thatExcludesNonPlayersWithMessage("Sorry, this is in-game only feature!")
                 .withFirstPrompt(prompt)
                 .addConversationAbandonedListener(abandonListener)

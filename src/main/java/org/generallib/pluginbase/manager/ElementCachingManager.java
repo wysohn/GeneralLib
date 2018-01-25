@@ -38,7 +38,7 @@ public abstract class ElementCachingManager<K, V extends ElementCachingManager.N
     private final Map<String, K> nameMap = new HashMap<>();
     private Database<V> db;
 
-    private Thread cacheUpdateThread;
+    private CacheUpdateThread cacheUpdateThread;
 
     private boolean dbWriting = false;
 
@@ -83,6 +83,19 @@ public abstract class ElementCachingManager<K, V extends ElementCachingManager.N
             cachedElements.clear();
         }
         updateCache();
+    }
+
+    public void setCacheUpdaterStatus(boolean status) {
+        synchronized(this.cacheUpdateThread) {
+            this.cacheUpdateThread.enabled = status;
+            if(status) {
+                this.cacheUpdateThread.notifyAll();
+            }
+        }
+    }
+
+    public boolean getCacheUpdaterStatus() {
+        return this.cacheUpdateThread.enabled;
     }
 
     public DatabaseFile<V> createFileDB() {
@@ -365,6 +378,8 @@ public abstract class ElementCachingManager<K, V extends ElementCachingManager.N
     }
 
     private class CacheUpdateThread extends Thread {
+        boolean enabled = false;
+
         CacheUpdateThread() {
             this.setPriority(MIN_PRIORITY);
             this.setName("CacheUpdateThread");
@@ -374,6 +389,15 @@ public abstract class ElementCachingManager<K, V extends ElementCachingManager.N
         @Override
         public void run() {
             while (!Thread.interrupted() && base.isEnabled()) {
+                while(!enabled) {
+                    try {
+                        synchronized (this) {
+                            wait();
+                        }
+                    } catch (InterruptedException e1) {
+                    }
+                }
+
                 try {
                     if (!dbWriting)
                         updateCache();

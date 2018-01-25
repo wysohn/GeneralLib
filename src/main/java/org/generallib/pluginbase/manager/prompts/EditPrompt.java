@@ -6,15 +6,18 @@ import java.util.Map.Entry;
 import org.bukkit.conversations.Conversable;
 import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
+import org.generallib.pluginbase.PluginBase;
+import org.generallib.pluginbase.PluginLanguage.Language;
+import org.generallib.pluginbase.language.DefaultLanguages;
 import org.generallib.pluginbase.manager.prompts.PromptFacotry.ValueChanger;
 
-public class EditPrompt extends IndexBasedPrompt<Map.Entry<String, Object>> {
-    public EditPrompt(String title, Map<String, Object> value) {
-        super(Prompt.END_OF_CONVERSATION, title, PromptFacotry.mapToEntryList(value));
+public class EditPrompt extends IndexBasedPrompt<Map.Entry<Language, Object>> {
+    public EditPrompt(PluginBase base, Object title, Map<Language, Object> value) {
+        super(base, Prompt.END_OF_CONVERSATION, title, PromptFacotry.mapToEntryList(value));
     }
 
-    public EditPrompt(Prompt parent, String title, Map<String, Object> value) {
-        super(parent, title, PromptFacotry.mapToEntryList(value));
+    public EditPrompt(PluginBase base, Prompt parent, Object title, Map<Language, Object> property) {
+        super(base, parent, title, PromptFacotry.mapToEntryList(property));
     }
 
     @Override
@@ -25,11 +28,11 @@ public class EditPrompt extends IndexBasedPrompt<Map.Entry<String, Object>> {
             if(arg1.length() > 0 && arg1.matches("[0-9]+")) {
                 int index = Integer.parseInt(arg1);
 
-                Entry<String, Object> pair = this.get(index);
+                Entry<Language, Object> pair = this.get(index);
                 if (pair == null)
                     return this;
 
-                return PromptFacotry.getEditPromptForValueType(this, pair.getKey(), new ValueChanger() {
+                return PromptFacotry.getEditPromptForValueType(base, this, pair.getKey(), new ValueChanger() {
 
                     @Override
                     public void onChange(Object newVal) {
@@ -59,8 +62,7 @@ public class EditPrompt extends IndexBasedPrompt<Map.Entry<String, Object>> {
     protected void print(Conversable conv) {
         super.print(conv);
 
-        //TODO later user Language
-        conv.sendRawMessage("Enter index to edit");
+        conv.sendRawMessage(base.lang.parseFirstString(conv, DefaultLanguages.General_PromptMain_EnterIndex));
         conv.sendRawMessage("");
 
 

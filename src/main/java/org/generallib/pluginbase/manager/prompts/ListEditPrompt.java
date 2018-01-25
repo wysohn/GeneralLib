@@ -5,14 +5,17 @@ import java.util.List;
 import org.bukkit.conversations.Conversable;
 import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
+import org.generallib.pluginbase.PluginBase;
+import org.generallib.pluginbase.PluginLanguage.Language;
+import org.generallib.pluginbase.language.DefaultLanguages;
 
 public class ListEditPrompt extends IndexBasedPrompt<String>{
-    public ListEditPrompt(Prompt parent, String title, List<String> currentData) {
-        super(parent, title, currentData);
+    public ListEditPrompt(PluginBase base, Prompt parent, Language title, List<String> currentData) {
+        super(base, parent, title, currentData);
     }
 
-    public ListEditPrompt(String title, List<String> currentData) {
-        super(Prompt.END_OF_CONVERSATION, title, currentData);
+    public ListEditPrompt(PluginBase base, Language title, List<String> currentData) {
+        super(base, Prompt.END_OF_CONVERSATION, title, currentData);
     }
 
     @Override
@@ -53,8 +56,7 @@ public class ListEditPrompt extends IndexBasedPrompt<String>{
     protected void print(Conversable conv) {
         super.print(conv);
 
-        //TODO later user Language
-        conv.sendRawMessage("add <value> - add <value> to the list");
-        conv.sendRawMessage("del <num> - delete data at <num> index");
+        conv.sendRawMessage(base.lang.parseFirstString(conv, DefaultLanguages.General_ListEditPrompt_Add));
+        conv.sendRawMessage(base.lang.parseFirstString(conv, DefaultLanguages.General_ListEditPrompt_Del));
     }
 }

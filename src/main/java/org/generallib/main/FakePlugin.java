@@ -16,8 +16,6 @@
  *******************************************************************************/
 package org.generallib.main;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -30,8 +28,6 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.conversations.ConversationAbandonedEvent;
-import org.bukkit.conversations.ConversationAbandonedListener;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.generallib.nms.entity.INmsEntityManager;
@@ -39,7 +35,6 @@ import org.generallib.nms.particle.INmsParticleSender;
 import org.generallib.nms.world.BlockFilter;
 import org.generallib.nms.world.INmsWorldManager;
 import org.generallib.pluginbase.PluginBase;
-import org.generallib.pluginbase.manager.PropertyEditManager;
 
 //just a fake plugin
 public class FakePlugin extends PluginBase {
@@ -99,42 +94,6 @@ public class FakePlugin extends PluginBase {
     };
     private static UUID temp = UUID.randomUUID();
 
-    private static Map<String, Object> props = new HashMap<String, Object>(){{
-        put("int", 1);
-        put("double", 1.5);
-        put("boolean", false);
-        put("String", "some string");
-        put("list", new ArrayList<String>() {{
-            add("hi");
-            add("hello");
-            add("hola");
-        }});
-        put("map", new HashMap<String, Object>(){{
-            put("int2", 2);
-            put("double2", 2.5);
-            put("boolean2", false);
-            put("String2", "some string2");
-            put("list2", new ArrayList<String>() {{
-                add("hi2");
-                add("hello2");
-                add("hola2");
-            }});
-            put("map2", new HashMap<String, Object>(){{
-                put("int3", 1);
-                put("double3", 1.5);
-                put("boolean3", false);
-                put("String3", "some string3");
-                put("list3", new ArrayList<String>() {{
-                    add("hi3");
-                    add("hello3");
-                    add("hola3");
-                }});
-                put("map3", new HashMap<String, Object>(){{
-
-                }});
-            }});
-        }});
-    }};
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender instanceof Player && !((Player) sender).isOp())
@@ -192,13 +151,13 @@ public class FakePlugin extends PluginBase {
                         }
                     });
                 }
-            } else if(args.length == 2) {
+            }/* else if(args.length == 2) {
                 if(args[0].equalsIgnoreCase("prop")) {
                     if(args[1].equals("show")) {
                         printProp(sender, 0, props);
                     }else if(args[1].equals("start")) {
                         PropertyEditManager m = this.getManager(PropertyEditManager.class);
-                        m.startEdit((Player) sender, "Test", props, new ConversationAbandonedListener() {
+                        m.startEdit((Player) sender, DefaultLanguages.General_Header, props, new ConversationAbandonedListener() {
 
                             @Override
                             public void conversationAbandoned(ConversationAbandonedEvent arg0) {
@@ -209,7 +168,7 @@ public class FakePlugin extends PluginBase {
                         });
                     }
                 }
-            }
+            }*/
         } catch (Exception e) {
             sender.sendMessage(ChatColor.RED + e.getMessage());
             return true;

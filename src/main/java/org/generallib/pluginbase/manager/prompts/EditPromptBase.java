@@ -5,21 +5,28 @@ import org.bukkit.conversations.Conversable;
 import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
 import org.generallib.pluginbase.PluginBase;
+import org.generallib.pluginbase.PluginLanguage.Language;
 
 public abstract class EditPromptBase implements Prompt{
     protected static final int CONTENTSLINE_PER_PAGE = 8;
 
+    protected final PluginBase base;
     protected final Prompt parent;
-    protected final String title;
-    public EditPromptBase(Prompt parent, String title) {
+    protected final Object title;
+
+    public EditPromptBase(PluginBase base, Prompt parent, Object title) {
+        super();
+        this.base = base;
         this.parent = parent;
         this.title = title;
     }
+
+    public PluginBase getBase() {
+        return base;
+    }
+
     public Prompt getParent() {
         return parent;
-    }
-    public String getTitle() {
-        return title;
     }
 
     @Override
@@ -42,10 +49,13 @@ public abstract class EditPromptBase implements Prompt{
 
     protected void print(Conversable conv) {
         //clean up screen
-        for(int i = 0; i < 10; i++)
+        for(int i = 0; i < 15; i++)
             conv.sendRawMessage("");
 
-        conv.sendRawMessage("<"+title+">");
+        if(title instanceof Language)
+            conv.sendRawMessage("<"+base.lang.parseFirstString(conv, (Language) title)+">");
+        else
+            conv.sendRawMessage("<"+title+">");
         conv.sendRawMessage("");
     }
 }

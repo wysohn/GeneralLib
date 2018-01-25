@@ -9,9 +9,12 @@ import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.NumericPrompt;
 import org.bukkit.conversations.Prompt;
 import org.bukkit.conversations.StringPrompt;
+import org.generallib.pluginbase.PluginBase;
+import org.generallib.pluginbase.PluginLanguage.Language;
+import org.generallib.pluginbase.language.DefaultLanguages;
 
 public class PromptFacotry {
-    static <K> Prompt getEditPromptForValueType(EditPromptBase parent, K title, PromptFacotry.ValueChanger changer) {
+    static Prompt getEditPromptForValueType(PluginBase base, EditPromptBase parent, Language title, PromptFacotry.ValueChanger changer) {
         Object value = changer.getValue();
 
         if(value instanceof Number) {
@@ -19,7 +22,7 @@ public class PromptFacotry {
 
                 @Override
                 public String getPromptText(ConversationContext arg0) {
-                    return "Enter the number";
+                    return base.lang.parseFirstString(arg0.getForWhom(), DefaultLanguages.General_Prompt_EnterNumber);
                 }
 
                 @Override
@@ -34,7 +37,7 @@ public class PromptFacotry {
 
                 @Override
                 public String getPromptText(ConversationContext arg0) {
-                    return "Enter 'true' or 'false'";
+                    return base.lang.parseFirstString(arg0.getForWhom(), DefaultLanguages.General_Prompt_EnterBoolean);
                 }
 
                 @Override
@@ -49,7 +52,7 @@ public class PromptFacotry {
             return new StringPrompt() {
                 @Override
                 public String getPromptText(ConversationContext arg0) {
-                    return "Enter the value";
+                    return base.lang.parseFirstString(arg0.getForWhom(), DefaultLanguages.General_Prompt_EnterString);
                 }
 
                 @Override
@@ -60,9 +63,9 @@ public class PromptFacotry {
 
             };
         } else if(value instanceof Map) {
-            return new EditPrompt(parent, String.valueOf(title), (Map<String, Object>) value);
+            return new EditPrompt(base, parent, title, (Map<Language, Object>) value);
         } else if(value instanceof List) {
-            return new ListEditPrompt(parent, String.valueOf(title), (List<String>) value);
+            return new ListEditPrompt(base, parent, title, (List<String>) value);
         }
 
         return null;

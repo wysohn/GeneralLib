@@ -3,7 +3,7 @@ apply plugin: 'kotlin'
 apply plugin: 'java'
 
 buildscript {
-    ext.kotlin_version = '1.1.51'
+    ext.kotlin_version = '1.2.21'
     ext.bukkit_version = "1.12-R0.1-SNAPSHOT"
     repositories {
         mavenCentral()
@@ -98,7 +98,8 @@ jar {
     from {
         String[] include = [
                 "kotlin-runtime-${kotlin_version}.jar",
-                "kotlin-stdlib-${kotlin_version}.jar"
+                "kotlin-stdlib-${kotlin_version}.jar",
+				"kotlin-support-${kotlin_version}.jar",
         ]
 
         configurations.compile
