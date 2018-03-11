@@ -41,15 +41,32 @@ public class TimeUtil {
      * @return
      */
     public static String milliSecondsToString(long interval) {
-        int r = 0;
+        long r = 0;
 
-        int hour = (int) interval / (60 * 60 * 1000);
-        r = (int) interval % (60 * 60 * 1000);
+        long day = interval / (24 * 60 * 60 * 1000);
+        r = interval % (24 * 60 * 60 * 1000);
 
-        int minute = r / (60 * 1000);
+        long hour = interval / (60 * 60 * 1000);
+        r = r % (60 * 60 * 1000);
+
+        long minute = r / (60 * 1000);
         r = r % (60 * 1000);
 
-        int second = r / (1000);
+        long second = r / (1000);
+
+        StringBuilder builder = new StringBuilder();
+        if(day > 0){
+            builder.append(day + "d ");
+        }
+        if(hour > 0){
+            builder.append(hour + "h ");
+        }
+        if(minute > 0){
+            builder.append(minute + "m ");
+        }
+        if(second > 0){
+            builder.append(second + "s");
+        }
 
         return hour + "h " + minute + "m " + second + "s";
     }

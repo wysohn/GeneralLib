@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+
 import org.jblas.DoubleMatrix;
 import org.jblas.MatrixFunctions;
 
@@ -87,7 +88,7 @@ public class NeuralNetwork implements Serializable {
 
     /**
      * network with sigmoid activation
-     * 
+     *
      * @param layerCounts
      * @throws NeuralNetworkInitializeException
      */
@@ -97,7 +98,7 @@ public class NeuralNetwork implements Serializable {
 
     /**
      * network with custom activation
-     * 
+     *
      * @param layerCounts
      * @param act
      * @throws NeuralNetworkInitializeException
@@ -168,7 +169,7 @@ public class NeuralNetwork implements Serializable {
             DoubleMatrix delta = deltas[i + 1];
             DoubleMatrix thetaTemp = theta[i].mulColumn(0, 0);
 
-            DoubleMatrix grad = delta.transpose().mmul(forward[i]).mul(1.0 / m).add(thetaTemp.mul((double) lambda / m));
+            DoubleMatrix grad = delta.transpose().mmul(forward[i]).mul(1.0 / m).add(thetaTemp.mul(lambda / m));
             grad = grad.mulColumn(0, 0);
 
             theta[i] = theta[i].sub(grad);

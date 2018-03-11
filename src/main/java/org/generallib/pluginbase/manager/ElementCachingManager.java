@@ -196,11 +196,11 @@ public abstract class ElementCachingManager<K, V extends ElementCachingManager.N
         cache(key, newVal);
     }
 
-    private void cache(K key, V newVal) {
+    protected void cache(K key, V newVal) {
         cache(key, newVal, getUpdateHandle(), getDeleteHandle());
     }
 
-    private void cache(K key, V newVal, CacheUpdateHandle<K, V> updateHndle, CacheDeleteHandle<K, V> deleteHandle) {
+    protected void cache(K key, V newVal, CacheUpdateHandle<K, V> updateHndle, CacheDeleteHandle<K, V> deleteHandle) {
         synchronized (cachedElements) {
             if (newVal == null) {
                 V original = cachedElements.remove(key);

@@ -15,6 +15,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventException;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.plugin.EventExecutor;
 import org.generallib.location.utils.LocationUtil;
 import org.generallib.pluginbase.PluginBase;
@@ -23,6 +24,8 @@ import org.generallib.pluginbase.constants.ClaimInfo;
 import org.generallib.pluginbase.constants.SimpleChunkLocation;
 import org.generallib.pluginbase.constants.SimpleLocation;
 import org.generallib.pluginbase.language.DefaultLanguages;
+import org.generallib.pluginbase.manager.region.DefaultHandle;
+import org.generallib.pluginbase.manager.region.HandleBlockBreak;
 
 public abstract class RegionManager<T extends PluginBase, V extends ClaimInfo> extends ElementCachingManager<Area, V>
         implements Listener {
@@ -65,17 +68,20 @@ public abstract class RegionManager<T extends PluginBase, V extends ClaimInfo> e
         return registeredEventTypes;
     }
 
-    protected void initEvent(Class<? extends Event> event, final EventHandle eventHandle) {
+    protected <T extends Event> void initEvent(Class<? extends T> event, final EventHandle<T> eventHandle) {
         if(registeredEventTypes.add(event)) {
             Bukkit.getPluginManager().registerEvent(event, this, EventPriority.NORMAL, new EventExecutor() {
 
                 @Override
                 public void execute(Listener arg0, Event arg1) throws EventException {
-                    Location loc = eventHandle.getLocation(arg1);
+                    if(event != arg1.getClass())
+                        return;
+
+                    Location loc = eventHandle.getLocation((T) arg1);
                     if (loc == null)
                         return;
 
-                    Entity cause = eventHandle.getCause(arg1);
+                    Entity cause = eventHandle.getCause((T) arg1);
 
                     // canceled
                     if (generalEventHandle != null && generalEventHandle.preEvent(arg1, loc, cause)) {
@@ -227,7 +233,6 @@ public abstract class RegionManager<T extends PluginBase, V extends ClaimInfo> e
      * This method is not thread safe.
      *
      * @param area
-     * @param info
      */
     private void setAreaCache(Area area) {
         for (SimpleChunkLocation scloc : Area.getAllChunkLocations(area)) {
@@ -315,10 +320,10 @@ public abstract class RegionManager<T extends PluginBase, V extends ClaimInfo> e
      * @author wysohn
      *
      */
-    protected interface EventHandle {
-        Entity getCause(Event e);
+    public interface EventHandle<T extends Event> {
+        Entity getCause(T e);
 
-        Location getLocation(Event e);
+        Location getLocation(T e);
     }
 
     /**
