@@ -90,7 +90,7 @@ import copy.com.google.gson.stream.JsonWriter;
  * been configured to {@link GsonBuilder#serializeNulls()}, these nulls will be
  * written to the final document. Otherwise the value (and the corresponding
  * name when writing to a JSON object) will be omitted automatically. In either
- * case your type adapter must handle null.
+ * case your type adapter must gamehandle null.
  *
  * <p>
  * To use a custom type adapter with Gson, you must <i>register</i> it with a
@@ -164,7 +164,7 @@ public abstract class TypeAdapter<T> {
 
     /**
      * This wrapper method is used to make a type adapter null tolerant. In
-     * general, a type adapter is required to handle nulls in write and read
+     * general, a type adapter is required to gamehandle nulls in write and read
      * methods. Here is how this is typically done:<br>
      * 
      * <pre>

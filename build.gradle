@@ -35,7 +35,7 @@ tasks.withType(JavaCompile) {
 sourceSets {
 	main {
 		java {
-			srcDirs = ['src/main/java']
+			srcDirs = ['src/main/java', 'src/main/kotlin']
 		}
 		resources {
 			srcDirs = ['src/main/resources']
@@ -81,7 +81,7 @@ dependencies {
 }
 
 jar {
-	from sourceSets.main.java
+	from sourceSets.main.allSource
 }
 compileKotlin {
     kotlinOptions {

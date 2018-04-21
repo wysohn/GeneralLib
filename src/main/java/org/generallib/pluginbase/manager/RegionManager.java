@@ -315,7 +315,7 @@ public abstract class RegionManager<T extends PluginBase, V extends ClaimInfo> e
     };
 
     /**
-     * The handle that is responsible for each Bukkit API events.
+     * The gamehandle that is responsible for each Bukkit API events.
      *
      * @author wysohn
      *
@@ -327,7 +327,7 @@ public abstract class RegionManager<T extends PluginBase, V extends ClaimInfo> e
     }
 
     /**
-     * This handle can be used to do something before events are passed to each
+     * This gamehandle can be used to do something before events are passed to each
      * EventHandles. For example, it is tedious to check if a player has bypass
      * permission in every single EventHandles; if you were to use
      * GeneralEventHandle, you can simply check it before the events are passed
@@ -342,7 +342,7 @@ public abstract class RegionManager<T extends PluginBase, V extends ClaimInfo> e
          * the EventHandles.
          *
          * @param e
-         *            event to handle
+         *            event to gamehandle
          * @param cause
          *            the entity caused the event
          * @param loc
@@ -358,7 +358,7 @@ public abstract class RegionManager<T extends PluginBase, V extends ClaimInfo> e
          * Cancellable
          *
          * @param e
-         *            event to handle
+         *            event to gamehandle
          */
         default public void postEvent(Event e) {
             if (e instanceof Cancellable)

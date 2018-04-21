@@ -32,10 +32,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.generallib.main.FakePlugin;
 import org.generallib.pluginbase.PluginLanguage.Language;
 import org.generallib.pluginbase.language.DefaultLanguages;
-import org.generallib.pluginbase.manager.PlayerLocationManager;
-import org.generallib.pluginbase.manager.PropertyEditManager;
-import org.generallib.pluginbase.manager.TargetBlockManager;
-import org.generallib.pluginbase.manager.VolatileTaskManager;
+import org.generallib.pluginbase.manager.*;
 
 /**
  * Always register commands, managers, APIs, and languages.
@@ -79,6 +76,7 @@ public abstract class PluginBase extends JavaPlugin {
         this.adminPermission = adminPermission;
 
         registerManager(PlayerLocationManager.getSharedInstance(this));
+        registerManager(new AreaSelectionManager(this, PluginManager.NORM_PRIORITY));
         registerManager(new VolatileTaskManager(this, PluginManager.NORM_PRIORITY));
         registerManager(new TargetBlockManager(this, PluginManager.NORM_PRIORITY));
         registerManager(new PropertyEditManager(this, PluginManager.NORM_PRIORITY));
@@ -371,16 +369,39 @@ public abstract class PluginBase extends JavaPlugin {
         }
     }
 
-    /**
-     *
-     * @param clazz
-     * @return the Manager; null if nothing found.
-     */
-    /*
-     * @SuppressWarnings("unchecked") public <T extends PluginManager> T
-     * getManagerByClass(Class<? extends PluginManager> clazz){ return (T)
-     * pluginManager.get(clazz); }
-     */
+    public void broadcast(Language language) {
+        broadcast(language, null, null);
+    }
+
+    public void broadcast(Language language, PlayerFilter filter) {
+        broadcast(language, filter, null);
+    }
+
+    public void broadcast(Language language, PreParseHandle parseHandle) {
+        broadcast(language, null, parseHandle);
+    }
+
+    public void broadcast(Language language, PlayerFilter filter, PreParseHandle parseHandle) {
+        for(Player player : Bukkit.getOnlinePlayers()){
+            if(filter != null && !filter.accept(player))
+                continue;
+
+            if(parseHandle != null)
+                parseHandle.onParse(lang);
+
+            sendMessage(player, language);
+        }
+    }
+
+    @FunctionalInterface
+    public interface PlayerFilter{
+        boolean accept(Player player);
+    }
+
+    @FunctionalInterface
+    public interface PreParseHandle{
+        void onParse(PluginLanguage lang);
+    }
 
     @SuppressWarnings("unchecked")
     public <T extends PluginConfig> T getPluginConfig() {

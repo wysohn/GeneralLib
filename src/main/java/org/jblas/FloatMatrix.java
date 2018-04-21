@@ -67,7 +67,7 @@ import java.util.regex.Pattern;
  * 
  * Don't be intimidated by the large number of methods this function defines.
  * Most are overloads provided for ease of use. For example, for each arithmetic
- * operation, up to six overloaded versions exist to handle in-place
+ * operation, up to six overloaded versions exist to gamehandle in-place
  * computations, and scalar arguments (like adding a number to all elements of a
  * matrix).
  * 

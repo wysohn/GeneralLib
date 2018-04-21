@@ -32,8 +32,11 @@ public enum DefaultLanguages implements Language {
     General_NoSuchCommand("&cNo such command ${string}!"),
     General_Allow("&aAllow"),
     General_Deny("&cDeny"),
+    General_On("&aOn"),
+    General_Off("&cOff"),
     General_NotABoolean("&c${string} is not a boolean!"),
     General_NotEnoughPermission("&cYou don't have enough permission!"),
+    General_NothingOnYourHand("&cNothing on your hand!"),
 
     General_Prompt_EnterNumber("&7Enter the &6number &7below."),
     General_Prompt_EnterBoolean("&7Enter '&atrue&7' or '&cfalse&7' below."),
@@ -72,6 +75,19 @@ public enum DefaultLanguages implements Language {
     TargetBlockManager_ReadyToClick("&7Now &aclick &7the target block. You may just cancel it by &cshift + click &7any block."),
     TargetBlockManager_Canceled("&7Cancelled."),
 
+    AreaSelectionManager_DIFFERENTWORLD("&cPositions are in different worlds."),
+    AreaSelectionManager_COMPLETE("&dSmallest: ${string} , Largest: ${string}"),
+    AreaSelectionManager_LEFTSET("&aLeft ready"),
+    AreaSelectionManager_RIGHTSET("&aRight ready"),
+
+    ArenaManager_ArenaInfo_Format("&d${string} &8: &7${string}"),
+
+    StructureManager_NotAValidBlock("&cThis structure can only be used on &6${string}&c!"),
+    StructureManager_AlreadyThere("&7Another structure is already there."),
+
+    Structure_Title("Title"),
+    Structure_Trusts("Trusts"),
+    Structure_PublicMode("PublicMode"),
     ;
 
     private final String[] englishDefault;

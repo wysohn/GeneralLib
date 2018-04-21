@@ -110,7 +110,7 @@ public @interface JsonAdapter {
     Class<?> value();
 
     /**
-     * false, to be able to handle {@code null} values within the adapter,
+     * false, to be able to gamehandle {@code null} values within the adapter,
      * default value is true.
      */
     boolean nullSafe() default true;

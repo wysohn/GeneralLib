@@ -590,7 +590,7 @@ public final class GsonBuilder {
     /**
      * Register a factory for type adapters. Registering a factory is useful
      * when the type adapter needs to be configured based on the type of the
-     * field being processed. Gson is designed to handle a large number of
+     * field being processed. Gson is designed to gamehandle a large number of
      * factories, so you should consider registering them to be at par with
      * registering an individual type adapter.
      *
@@ -653,7 +653,7 @@ public final class GsonBuilder {
      * {@link Double#POSITIVE_INFINITY}, {@link Double#NEGATIVE_INFINITY}, it
      * will throw an {@link IllegalArgumentException}. This method provides a
      * way to override the default behavior when you know that the JSON receiver
-     * will be able to handle these special values.
+     * will be able to gamehandle these special values.
      *
      * @return a reference to this {@code GsonBuilder} object to fulfill the
      *         "Builder" pattern

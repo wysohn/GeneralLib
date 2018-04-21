@@ -23,13 +23,12 @@ import java.util.UUID;
 
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
-import org.generallib.database.serialize.ItemStackArraySerializer;
-import org.generallib.database.serialize.ItemStackSerializer;
-import org.generallib.database.serialize.LocationSerializer;
-import org.generallib.database.serialize.UUIDSerializer;
+import org.generallib.database.serialize.*;
 
 import copy.com.google.gson.Gson;
 import copy.com.google.gson.GsonBuilder;
+import org.generallib.pluginbase.constants.SimpleChunkLocation;
+import org.generallib.pluginbase.constants.SimpleLocation;
 
 public abstract class Database<T> {
     private static GsonBuilder builder = new GsonBuilder()
@@ -37,7 +36,9 @@ public abstract class Database<T> {
             .registerTypeAdapter(Location.class, new LocationSerializer())
             .registerTypeAdapter(ItemStack.class, new ItemStackSerializer())
             .registerTypeAdapter(ItemStack[].class, new ItemStackArraySerializer())
-            .registerTypeAdapter(UUID.class, new UUIDSerializer());
+            .registerTypeAdapter(UUID.class, new UUIDSerializer())
+            .registerTypeAdapter(SimpleLocation.class, new DefaultSerializer<SimpleLocation>())
+            .registerTypeAdapter(SimpleChunkLocation.class, new DefaultSerializer<SimpleChunkLocation>());
 
     public static void registerTypeAdapter(Class<?> clazz, Object obj) {
         synchronized (builder) {

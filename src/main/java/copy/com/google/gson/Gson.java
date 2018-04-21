@@ -243,7 +243,7 @@ public final class Gson {
         factories.add(TypeAdapters.JSON_ELEMENT_FACTORY);
         factories.add(ObjectTypeAdapter.FACTORY);
 
-        // the excluder must precede all adapters that handle user-defined types
+        // the excluder must precede all adapters that gamehandle user-defined types
         factories.add(excluder);
 
         // users' type adapters
@@ -496,7 +496,7 @@ public final class Gson {
                     return candidate;
                 }
             }
-            throw new IllegalArgumentException("GSON cannot handle " + type);
+            throw new IllegalArgumentException("GSON cannot gamehandle " + type);
         } finally {
             threadCalls.remove(type);
 

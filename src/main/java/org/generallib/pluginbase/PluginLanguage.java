@@ -33,6 +33,7 @@ import java.util.Queue;
 import java.util.Set;
 
 import org.apache.commons.lang.Validate;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -351,7 +352,13 @@ public final class PluginLanguage implements PluginProcedure {
                         str = leftStr + String.valueOf(this.string.poll()) + rightStr;
                         break;
                     case "bool":
-                        str = leftStr + String.valueOf(this.bool.poll()) + rightStr;
+                        Boolean value = this.bool.poll();
+                        if(value == null){
+                            str = leftStr + "null" + rightStr;
+                        }else{
+                            ChatColor color = value ? ChatColor.GREEN : ChatColor.RED;
+                            str = leftStr + color + value + ChatColor.getLastColors(leftStr)+rightStr;
+                        }
                         break;
                     case "player":
                         str = leftStr + (sender instanceof Player ? ((Player) sender).getName() : "null") + rightStr;

@@ -27,9 +27,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.generallib.pluginbase.constants.ArenaState;
 import org.generallib.serializetools.Utf8YamlConfiguration;
 
 /**
@@ -39,9 +45,7 @@ import org.generallib.serializetools.Utf8YamlConfiguration;
  *
  * Child class only need to declare <b>public field with '_'</b> as _ will be
  * used to indicate the path. Fields with other than public modifier will be
- * ignored. Use {@link Comment} annotation to add comments. Comment annotation
- * has member <b>String[] comment</b>. ex) @Comment(comment =
- * {"This","is","comment"})
+ * ignored.
  *
  * <p>
  * For example) test_test field is equivalent to test.test in config
@@ -85,6 +89,62 @@ public abstract class PluginConfig implements PluginProcedure {
     public String MySql_DBUser = "root";
     public String MySql_DBPassword = "1234";
 
+    public List<String> ArenaManager_Sign_Format = new ArrayList<String>(){{
+        add("&e&l●&7&l <plugin> &e&l●");
+        add("&0<name>");
+        add("&a<state>");
+        add("&0<users>/<total>");
+    }};
+
+    public Location MainLobbyLocation = null;
+
+    public String ArenaManager_Sign_StateTranslate_WAITING = ArenaState.WAITING.name();
+    public String ArenaManager_Sign_StateTranslate_STARTING = ArenaState.STARTING.name();
+    public String ArenaManager_Sign_StateTranslate_PLAYING = ArenaState.PLAYING.name();
+    public String ArenaManager_Sign_StateTranslate_ENDING = ArenaState.ENDING.name();
+    public String ArenaManager_Sign_StateTranslate_CLEANING = ArenaState.CLEANING.name();
+
+    public String ArenaManager_Sign_StateBlock_WAITING = "${Material.HARD_CLAY}:5";
+    public String ArenaManager_Sign_StateBlock_STARTING = "${Material.HARD_CLAY}:4";
+    public String ArenaManager_Sign_StateBlock_PLAYING = "${Material.HARD_CLAY}:14";
+    public String ArenaManager_Sign_StateBlock_ENDING = "${Material.HARD_CLAY}:11";
+    public String ArenaManager_Sign_StateBlock_CLEANING = "${Material.HARD_CLAY}:15";
+
+    public String ArenaManager_Waiting_GameMode = GameMode.ADVENTURE.name();
+
+    public int ArenaManager_Starting_Delay_Seconds = 30;
+    public String ArenaManager_Starting_Delay_Messages_30 = "&a&l<count>;;10;10;10";
+    public String ArenaManager_Starting_Delay_Messages_15 = "&a&l<count>;;10;10;10";
+    public String ArenaManager_Starting_Delay_Messages_10 = "&a&l<count>;;10;10;10";
+    public String ArenaManager_Starting_Delay_Messages_5 = "&a&l<count>;;10;10;10";
+    public String ArenaManager_Starting_Delay_Messages_4 = "&a&l<count>;;10;10;10";
+    public String ArenaManager_Starting_Delay_Messages_3 = "&a&l<count>;;10;10;10";
+    public String ArenaManager_Starting_Delay_Messages_2 = "&a&l<count>;;10;10;10";
+    public String ArenaManager_Starting_Delay_Messages_1 = "&a&l<count>;;10;10;10";
+
+    public int ArenaManager_Ending_Delay_Seconds = 9;
+    public long ArenaManager_Ending_Firework_PerTick = 30L;
+    public boolean ArenaManager_Ending_Firework_Flicker = true;
+    public boolean ArenaManager_Ending_Firework_Trail = true;
+    public String ArenaManager_Ending_Firework_Type = FireworkEffect.Type.BALL_LARGE.name();
+    public List<Color> ArenaManager_Ending_Firework_Color = new ArrayList<Color>()
+    {
+        {
+            add(Color.RED);
+            add(Color.GREEN);
+            add(Color.BLUE);
+        }
+    };
+    public List<Color> ArenaManager_Ending_Firework_Fade = new ArrayList<Color>() {
+        {
+            add(Color.RED);
+            add(Color.GREEN);
+            add(Color.BLUE);
+        }
+    };
+
+    public String ArenaManager_onUserLeaveArena_GameMode = GameMode.SURVIVAL.name();
+
     @Override
     public void onEnable(final PluginBase base) throws Exception {
         this.base = base;
@@ -100,12 +160,11 @@ public abstract class PluginConfig implements PluginProcedure {
         config.load(file);
 
         validateAndLoad();
-        save();
     }
 
     @Override
     public void onDisable(PluginBase base) throws Exception {
-        save();
+
     }
 
     @Override
@@ -147,11 +206,6 @@ public abstract class PluginConfig implements PluginProcedure {
 
         base.getLogger().info("Added [" + addedNew + "] new configs with default value.");
 
-        Set<String> fieldNames = new HashSet<String>();
-        for (Field field : fields)
-            fieldNames.add(field.getName());
-
-        int deletedOld = 0;
         int loaded = 0;
         // delete non existing config or set value with existing config
         Configuration root = config.getRoot();
@@ -166,26 +220,22 @@ public abstract class PluginConfig implements PluginProcedure {
 
                 String fieldName = converToFieldName(key);
 
-                if (!fieldNames.contains(fieldName)) {
-                    config.set(key, null);
-                    deletedOld++;
-                } else {
-                    Field field = this.getClass().getField(fieldName);
+                Field field = this.getClass().getField(fieldName);
 
-                    field.set(this, config.get(key));
-                    loaded++;
-                }
+                field.set(this, config.get(key));
+                loaded++;
             } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
                 base.getLogger().severe(e.getMessage());
             }
         }
 
         try {
-            save();
+            if(addedNew != 0)
+                save();
         } catch (IOException e1) {
             e1.printStackTrace();
         }
-        base.getLogger().info("Deleted [" + deletedOld + "] old configs and loaded [" + loaded + "] configs.");
+        base.getLogger().info("Loaded [" + loaded + "] configs.");
 
         base.getLogger().info("Validation and Loading complete!");
     }
@@ -241,5 +291,9 @@ public abstract class PluginConfig implements PluginProcedure {
         base.getLogger().info("Complete!");
 
         validateAndLoad();
+    }
+
+    public ConfigurationSection getSection(String key){
+        return config.getConfigurationSection(convertToConfigName(key));
     }
 }

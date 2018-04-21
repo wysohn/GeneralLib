@@ -852,7 +852,7 @@ public final class TypeAdapters {
                 return null;
             }
             if (!rawType.isEnum()) {
-                rawType = rawType.getSuperclass(); // handle anonymous
+                rawType = rawType.getSuperclass(); // gamehandle anonymous
                                                    // subclasses
             }
             return (TypeAdapter<T>) new EnumTypeAdapter(rawType);

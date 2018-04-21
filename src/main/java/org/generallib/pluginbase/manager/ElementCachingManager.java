@@ -131,14 +131,14 @@ public abstract class ElementCachingManager<K, V extends ElementCachingManager.N
     protected abstract K createKeyFromString(String str);
 
     /**
-     * Get update handle to be used caching the data.
+     * Get update gamehandle to be used caching the data.
      *
      * @return
      */
     protected abstract CacheUpdateHandle<K, V> getUpdateHandle();
 
     /**
-     * Get delete handle to be used removing data from cache.
+     * Get delete gamehandle to be used removing data from cache.
      *
      * @return
      */
